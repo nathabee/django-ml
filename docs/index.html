@@ -1,0 +1,95 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Django-ML  Project Portal</title>
+  <link rel="icon" type="image/svg+xml" href="django-ml.svg">
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+  <script type="module">
+    import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+    mermaid.initialize({ startOnLoad: false });
+    window.mermaid = mermaid;
+  </script>
+  
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">
+      <div class="header-left">
+        <img src="django-ml.svg" alt="Django-ML Logo" class="logo">
+        <h1>Django-ML Project</h1>
+      </div>
+
+      <div class="translate-box">
+        🌐 Translate: <span id="google_translate_element"></span>
+      </div>
+    </div>
+
+    <script type="text/javascript">
+      function googleTranslateElementInit() {
+        new google.translate.TranslateElement(
+          { pageLanguage: 'en' },
+          'google_translate_element'
+        );
+      }
+    </script>
+    <script type="text/javascript"
+      src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+
+
+
+    <p style="margin-top: 1rem;">
+      🔗 View the full source code and documentation on
+      <a href="https://github.com/nathabee/django-ml" target="_blank">GitHub Repository</a>
+    </p>
+
+    <h2>📚 Project Documentation</h2>
+    <div class="doc-list">
+    
+      <details>
+        <summary><strong>🧭 Overview</strong></summary>
+        <ul>
+          <li><a href="presentation.md">Project Presentation</a></li>
+          <li><a href="workflow.md">Requirements</a></li>
+        </ul>
+      </details>
+    
+      <details>
+        <summary><strong>🔌 web service Overviews</strong></summary>
+        <ul>
+          <li><a href="web.md">List of all APIs</a></li> 
+        </ul>
+      </details>
+ 
+      <details>
+        <summary><strong>🔌 django service Overviews</strong></summary>
+        <ul>
+          <li><a href="django.md">List of all APIs</a></li> 
+        </ul>
+      </details>
+ 
+
+    </div>
+    
+
+    <div class="menu">
+      <button onclick="loadChecklist()">✅ App Test Checklist</button>
+    </div>
+
+
+    <div id="content"></div>
+  </div>
+
+  <script src="main.js"></script>
+
+
+</body>
+
+</html>
