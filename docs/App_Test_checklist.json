@@ -108,10 +108,10 @@
           "state": ""
         },
         {
-          "test": "Migrations applied",
-          "description": "Django applies migrations on startup.",
-          "expected": "`python manage.py showmigrations` shows built-ins applied; `\dt` in psql lists tables incl. django_migrations.",
-          "state": ""
+        "test": "Migrations applied",
+        "description": "Django applies migrations on startup.",
+        "expected": "`python manage.py showmigrations` shows built-ins applied; `\\dt` in psql lists tables incl. django_migrations.",
+        "state": ""
         },
         {
           "test": "Read/write sanity",
