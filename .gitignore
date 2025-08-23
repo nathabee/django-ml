@@ -1,0 +1,29 @@
+# node / next
+web/node_modules/
+web/.next/
+web/.turbo/
+web/.vercel/
+
+# python / django
+**/__pycache__/
+**/*.pyc
+django/staticfiles/
+django/media/
+
+# env / secrets
+.env
+*.env
+django/.env
+web/.env
+.env.*.local
+*.secret
+*.key
+
+# docker
+**/.dockerignore
+
+# OS junk
+.DS_Store
+Thumbs.db
+/web/.next/
+/django/.env
