@@ -1,33 +1,22 @@
-<!-- docs/django-ml.svg -->
-<svg xmlns="http://www.w3.org/2000/svg"
-     width="512" height="160" viewBox="0 0 512 160">
-  <!-- Transparent background -->
+<svg id="logo" xmlns="http://www.w3.org/2000/svg" width="512" height="160" viewBox="0 0 512 160">
   <rect width="100%" height="100%" fill="none"/>
 
   <!-- Wordmark -->
-  <g transform="translate(256,70)">
-    <text
-      text-anchor="middle"
-      dominant-baseline="central"
+  <g id="wordmark" transform="translate(256,70)">
+    <text text-anchor="middle" dominant-baseline="central"
       font-family="Inter, system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Noto Sans', 'Helvetica Neue', Arial, sans-serif"
-      font-size="64"
-      font-weight="800"
-      letter-spacing="1.5">
-      <tspan fill="#111111">DJANGO </tspan>
-      <tspan fill="#D50000">ML</tspan>
+      font-size="64" font-weight="800" letter-spacing="1.5">
+      <tspan class="django">DJANGO </tspan>
+      <tspan class="ml">ML</tspan>
     </text>
   </g>
 
   <!-- Tagline -->
-  <g transform="translate(256,120)">
-    <text
-      text-anchor="middle"
-      dominant-baseline="central"
+  <g id="tagline" transform="translate(256,120)">
+    <text text-anchor="middle" dominant-baseline="central"
       font-family="Inter, system-ui, sans-serif"
-      font-size="28"
-      font-weight="600"
-      letter-spacing="1">
-      <tspan fill="#2496ED">Powered with Docker</tspan>
+      font-size="28" font-weight="600" letter-spacing="1">
+      <tspan class="powered">Powered with Docker</tspan>
     </text>
   </g>
 </svg>
