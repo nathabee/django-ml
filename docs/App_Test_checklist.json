@@ -1,0 +1,171 @@
+{
+  "meta": {
+    "date": "2025-08-23",
+    "tester": "Your Name",
+    "host": "Local Dev Machine",
+    "os": "Ubuntu 22.04",
+    "dockerVersion": ">=24.x",
+    "composeVersion": "v2",
+    "project": "django-ml",
+    "projectVersion": "v0.1.0",
+    "branch": "main"
+  },
+  "sections": [
+    {
+      "section": "Init & Build",
+      "items": [
+        {
+          "test": "Repo available",
+          "description": "Repo is cloned and compose.yaml present at project root.",
+          "expected": "`compose.yaml` exists; `django/` and `web/` directories present.",
+          "state": ""
+        },
+        {
+          "test": "Seed node_modules (first run)",
+          "description": "Install web dependencies into the named volume.",
+          "expected": "`docker compose --profile dev run --rm web npm install` completes with no fatal errors.",
+          "state": ""
+        },
+        {
+          "test": "Build images",
+          "description": "Build django, web, and pull postgres image.",
+          "expected": "`docker compose --profile dev up --build` completes; images `django-ml-django`, `django-ml-web`, and `postgres:16` are used/created.",
+          "state": ""
+        },
+        {
+          "test": "Containers healthy/up",
+          "description": "All services started and reachable.",
+          "expected": "`docker compose ps` shows django-ml-api, django-ml-web, and db running (or up).",
+          "state": ""
+        }
+      ]
+    },
+    {
+      "section": "Web Service (Next.js) Tests",
+      "items": [
+        {
+          "test": "Welcome page",
+          "description": "Open the static welcome route.",
+          "expected": "GET http://localhost:8080/welcome returns 200 and HTML with 'Welcome'.",
+          "state": ""
+        },
+        {
+          "test": "Hello from backend on home page",
+          "description": "Home page fetches `/api/hello` from Django.",
+          "expected": "GET http://localhost:8080 shows text like 'Hello from Django (service: django)'.",
+          "state": ""
+        },
+        {
+          "test": "Login form present",
+          "description": "Check that username/password form is rendered.",
+          "expected": "Form fields and submit button visible; POST goes to /api/login.",
+          "state": ""
+        }
+      ]
+    },
+    {
+      "section": "API Service (Django) Tests",
+      "items": [
+        {
+          "test": "Health endpoint",
+          "description": "Simple health probe.",
+          "expected": "GET http://localhost:8001/health returns 200 and `{ \"status\": \"ok\" }`.",
+          "state": ""
+        },
+        {
+          "test": "Hello endpoint",
+          "description": "Basic API response.",
+          "expected": "GET http://localhost:8001/api/hello returns 200 and `{ \"service\": \"django\", \"message\": \"Hello from Django\" }`.",
+          "state": ""
+        },
+        {
+          "test": "Create test user",
+          "description": "Create or ensure a Django user exists.",
+          "expected": "`python manage.py createsuperuser` (or existing user) available for login.",
+          "state": ""
+        },
+        {
+          "test": "JWT login",
+          "description": "Obtain tokens from SimpleJWT.",
+          "expected": "POST http://localhost:8001/api/auth/login with JSON `{ \"username\":\"u\",\"password\":\"p\" }` returns 200 and `{ access, refresh }`.",
+          "state": ""
+        },
+        {
+          "test": "Protected route with Bearer token",
+          "description": "Access /api/me using Authorization header.",
+          "expected": "GET http://localhost:8001/api/me with `Authorization: Bearer <access>` returns 200 and user payload JSON.",
+          "state": ""
+        }
+      ]
+    },
+    {
+      "section": "DB (Postgres) Tests",
+      "items": [
+        {
+          "test": "Connection string",
+          "description": "Django connects via DATABASE_URL env.",
+          "expected": "`postgresql://app:app@db:5432/app` is set; container logs show successful connection.",
+          "state": ""
+        },
+        {
+          "test": "Migrations applied",
+          "description": "Django applies migrations on startup.",
+          "expected": "`python manage.py showmigrations` shows built-ins applied; `\dt` in psql lists tables incl. django_migrations.",
+          "state": ""
+        },
+        {
+          "test": "Read/write sanity",
+          "description": "Create a user and verify it exists in DB.",
+          "expected": "User appears in `auth_user` (via Django admin/dbshell).",
+          "state": ""
+        }
+      ]
+    },
+    {
+      "section": "Persistence After Restart",
+      "items": [
+        {
+          "test": "Stop and start",
+          "description": "Bring stack down and up again.",
+          "expected": "`docker compose down` then `docker compose up -d`; containers start cleanly.",
+          "state": ""
+        },
+        {
+          "test": "DB data persists",
+          "description": "Verify previously created user still exists.",
+          "expected": "Auth user remains present; volume `django-ml_db_data` persisted data.",
+          "state": ""
+        },
+        {
+          "test": "Web + API still OK",
+          "description": "Re-test key endpoints.",
+          "expected": "GET /welcome (8080), GET /api/hello (8001) both 200; login flow still works.",
+          "state": ""
+        }
+      ]
+    },
+    {
+      "section": "Optional: Health/Logs/Cleanup",
+      "items": [
+        {
+          "test": "Tail logs",
+          "description": "Follow logs to catch errors during dev.",
+          "expected": "`docker compose logs -f django` and `-f web` show no repeated stack traces.",
+          "state": ""
+        },
+        {
+          "test": "Volumes listed",
+          "description": "See project volumes.",
+          "expected": "`docker volume ls` includes `django-ml_db_data` and `django-ml_web_node_modules`.",
+          "state": ""
+        },
+        {
+          "test": "Clean rebuild (when needed)",
+          "description": "Rebuild without cache.",
+          "expected": "`docker compose build --no-cache` succeeds; stack still runs.",
+          "state": ""
+        }
+      ]
+    }
+  ]
+}

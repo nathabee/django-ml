@@ -292,3 +292,42 @@ label {
   border: 1px solid #ccc;
   border-radius: 4px;
 }
+
+
+
+/* ############################## 
+    CSS animation
+  ############################## */
+
+  /* Colors */
+#logo .django { fill: #111111; }
+#logo .ml     { fill: #D50000; }
+#logo .powered{ fill: #2496ED; }
+
+/* Draw-in effect, then fill */
+#logo .django, #logo .ml {
+  stroke: currentColor;
+  paint-order: stroke fill;
+  stroke-width: 2px;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+  fill: transparent;
+  stroke-dasharray: 1200;
+  stroke-dashoffset: 1200;
+}
+
+/* play sequence */
+#logo .django { color:#111; animation: draw 1.2s ease-out forwards, fill-django .6s ease-out forwards .9s; }
+#logo .ml     { color:#D50000; animation: draw 1.2s ease-out .15s forwards, fill-ml .6s ease-out 1.05s forwards; }
+
+/* tagline fade-up */
+#logo #tagline { opacity:0; transform: translateY(8px); animation: tagline .6s ease-out 1.2s forwards; }
+
+/* hover polish */
+#logo { transition: transform .2s ease, filter .2s ease; will-change: transform; }
+#logo:hover { transform: translateY(-2px); filter: drop-shadow(0 2px 6px rgba(0,0,0,.08)); }
+
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes fill-django { to { fill: #111111; } }
+@keyframes fill-ml { to { fill: #D50000; } }
+@keyframes tagline { to { opacity: 1; transform: translateY(0); } }
