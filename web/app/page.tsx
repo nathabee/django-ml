@@ -1,4 +1,5 @@
 // web/app/page.tsx
+// web/app/page.tsx  (only the fetch part changed)
 "use client";
 
 import { useEffect, useState } from "react";
@@ -10,10 +11,9 @@ export default function Home() {
   const [loginMsg, setLoginMsg] = useState<string>("");
   const [me, setMe] = useState<any>(null);
 
-  // fetch hello (unauthenticated)
+  // fetch hello (unauthenticated) via Next.js server route
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://django:8000";
-    fetch(`${apiUrl}/api/hello`, { cache: "no-store" })
+    fetch(`/api/hello`, { cache: "no-store" })
       .then(async (r) => {
         if (!r.ok) throw new Error(`Upstream ${r.status}`);
         const data = await r.json();

@@ -71,6 +71,12 @@ docker exec -it django-ml-api bash -lc "python manage.py createsuperuser"
     -d '{"username":"<user>","password":"<pass>"}'
   ```
 
+
+  curl -s -X POST http://localhost:8001/api/auth/login \
+    -H "Content-Type: application/json" \
+    -d '{"username":"test","password":"test"}'
+
+
 * **Use token**:
 
   ```bash

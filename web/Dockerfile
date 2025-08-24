@@ -9,5 +9,4 @@ RUN npm install -D typescript @types/node @types/react @types/react-dom
 COPY tsconfig.json ./tsconfig.json
 COPY next.config.mjs ./next.config.mjs
 COPY app ./app
-EXPOSE 3000
-CMD ["npm","run","dev"]
+EXPOSE 3000 

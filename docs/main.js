@@ -1,4 +1,15 @@
 // Load and render structured checklist JSON with metadata
+// helper to avoid accidental HTML injection
+function escapeHtml(s = "") {
+  return String(s)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+// Load and render structured checklist JSON with metadata
 async function loadStructuredChecklist(file = "App_Test_checklist.json") {
   const res = await fetch(file);
   const json = await res.json();
@@ -76,11 +87,22 @@ async function loadStructuredChecklist(file = "App_Test_checklist.json") {
     section.items.forEach((item, itemIndex) => {
       const row = document.createElement("div");
       row.classList.add("checklist-item");
-    
+
+      const expectedHtml = item.expected
+        ? `<em class="expected">${escapeHtml(item.expected)}</em>`
+        : "";
+      const detailsHtml = item.details
+        ? `<div class="details" style="margin-top:.25rem"><code>${escapeHtml(item.details)}</code></div>`
+        : "";
+
       const label = document.createElement("p");
-      label.innerHTML = `<strong>${item.test}</strong><br><em>${item.expected}</em>`;
+      label.innerHTML = `
+        <strong>${escapeHtml(item.test)}</strong><br>
+        ${expectedHtml}
+        ${detailsHtml}
+      `;
       row.appendChild(label);
-    
+
       // 🔹 Optional description field (editable textarea)
       const desc = document.createElement("textarea");
       desc.classList.add("description-field");
@@ -90,7 +112,7 @@ async function loadStructuredChecklist(file = "App_Test_checklist.json") {
       desc.style.marginBottom = "0.5rem";
       desc.value = item.description || "";
       row.appendChild(desc);
-    
+
       const options = ["Pass", "Partial", "Fail"];
       const name = `check-${secIndex}-${itemIndex}`;
       options.forEach(opt => {
@@ -99,24 +121,23 @@ async function loadStructuredChecklist(file = "App_Test_checklist.json") {
         input.name = name;
         input.value = opt;
         if (item.state === opt) input.checked = true;
-    
+
         const radioLabel = document.createElement("label");
         radioLabel.style.marginRight = "1rem";
         radioLabel.appendChild(input);
         radioLabel.append(` ${opt}`);
         row.appendChild(radioLabel);
       });
-    
+
       const note = document.createElement("input");
       note.type = "text";
       note.placeholder = "(Optional) Notes if Partial/Fail";
       note.classList.add("note-field");
       if (item.note) note.value = item.note;
       row.appendChild(note);
-    
+
       sectionDiv.appendChild(row);
     });
-    
 
     container.appendChild(sectionDiv);
   });
@@ -149,25 +170,27 @@ function saveChecklistAsJSON() {
   const sections = document.querySelectorAll(".checklist-section");
   const structured = [];
 
-  sections.forEach((section, secIndex) => {
+  sections.forEach((section) => {
     const heading = section.querySelector("h3").textContent;
     const items = [];
-    section.querySelectorAll(".checklist-item").forEach((item, itemIndex) => {
-      const labelText = item.querySelector("p").innerHTML.split("<br>")[0];
-      const expected = item.querySelector("p em").innerText;
+    section.querySelectorAll(".checklist-item").forEach((item) => {
+      const p = item.querySelector("p");
+      const testText = p ? p.innerHTML.split("<br>")[0] : "";
+      const expected = p?.querySelector(".expected")?.innerText || "";
+      const details = p?.querySelector(".details")?.innerText || "";
+
       const selected = item.querySelector("input[type='radio']:checked");
       const note = item.querySelector(".note-field").value;
-
       const descField = item.querySelector(".description-field");
 
       items.push({
-        test: labelText.replace(/<[^>]+>/g, ""),
+        test: testText.replace(/<[^>]+>/g, ""),
         expected,
+        details,               // ✅ new field persisted
         description: descField?.value || "",
         state: selected ? selected.value : "",
         note: note || ""
       });
-
     });
     structured.push({ section: heading, items });
   });
@@ -182,17 +205,21 @@ function saveChecklistAsJSON() {
   URL.revokeObjectURL(url);
 }
 
+
 function saveStructuredChecklist() {
   const meta = getMetaFromFields();
   const sections = document.querySelectorAll(".checklist-section");
-  let lines = [`# App Test Checklist\n`, `\n## ️Test Session`,
+  let lines = [
+    `# App Test Checklist\n`,
+    `\n## ️Test Session`,
     `- **Date:** ${meta.date}`,
     `- **Tester:** ${meta.tester}`,
     `- **Device:** ${meta.device}`,
     `- **Android Version:** ${meta.androidVersion}`,
     `- **App Version:** ${meta.appVersion}`,
     `- **Build Variant:** ${meta.buildVariant}`,
-    `\n---\n`];
+    `\n---\n`
+  ];
 
   sections.forEach(section => {
     const heading = section.querySelector("h3").textContent;
@@ -200,12 +227,18 @@ function saveStructuredChecklist() {
 
     const items = section.querySelectorAll(".checklist-item");
     items.forEach(item => {
-      const testLabel = item.querySelector("p").innerText.split("\n")[0];
+      const p = item.querySelector("p");
+      const testLabel = p ? p.innerText.split("\n")[0] : "Untitled test";
+      const expected = p?.querySelector(".expected")?.innerText || "";
+      const details = p?.querySelector(".details")?.innerText || "";
+
       const selected = item.querySelector("input[type='radio']:checked");
       const note = item.querySelector(".note-field").value;
       const status = selected ? selected.value : "Not marked";
 
       lines.push(`- **${testLabel}** — ${status}${note ? `: ${note}` : ""}`);
+      if (expected) lines.push(`  - _Expected:_ ${expected}`);
+      if (details)  lines.push(`  - _Details:_ ${details}`);
     });
   });
 
@@ -218,6 +251,7 @@ function saveStructuredChecklist() {
   a.click();
   URL.revokeObjectURL(url);
 }
+
 
 function renderChecklistFromData(data) {
   const container = document.getElementById("content");
