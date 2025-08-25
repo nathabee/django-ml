@@ -28,5 +28,8 @@ Thumbs.db
 /web/.next/
 /django/.env
 
+# database export
+backups/**/*.sql*
+
 # for me to ignore
 *.old
