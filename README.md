@@ -13,53 +13,54 @@ A learning stack for Docker + multi-service development:
 * **WP DB**: `wpdb` service (MariaDB 11)
 
 
-```mermaid
+```mermaid 
 flowchart LR
-  %% ====== Styles ======
-  classDef svc fill:#eaf5ff,stroke:#1e88e5,stroke-width:1px,color:#0b3a67;
-  classDef db  fill:#fff8e6,stroke:#fb8c00,stroke-width:1px,color:#5a3b00;
-  classDef vol fill:#f6f6f6,stroke:#9e9e9e,stroke-dasharray: 4 3,color:#333;
+  %% =========== Styles ===========
+  classDef svc fill:#eaf5ff,stroke:#1e88e5,color:#0b3a67;
+  classDef db  fill:#fff8e6,stroke:#fb8c00,color:#5a3b00;
+  classDef vol fill:#f6f6f6,stroke:#9e9e9e,stroke-dasharray:4 3,color:#333;
   classDef host fill:#ffffff,stroke:#bdbdbd,color:#333;
 
-  %% ====== Host (ports) ======
+  %% =========== Host (ports) ===========
   subgraph Host["Host (localhost)"]
     direction TB
-    H8080["http://localhost:8080 → Web"]:::host
-    H8001["http://localhost:8001 → Django API"]:::host
-    H8082["http://localhost:8082 → WordPress"]:::host
+    H8080["localhost:8080\nWeb"]:::host
+    H8001["localhost:8001\nDjango API"]:::host
+    H8082["localhost:8082\nWordPress"]:::host
   end
 
-  %% ====== Docker network ======
+  %% =========== Docker network ===========
   subgraph Docker["Docker (default bridge network)"]
     direction LR
 
-    Web["Next.js dev<br/>container: <code>django-ml-web</code><br/>port: 3000"]:::svc
-    Django["Django dev server<br/>container: <code>django-ml-api</code><br/>port: 8000"]:::svc
-    PG[(Postgres 16<br/>service: <code>db</code><br/>port: 5432)]:::db
-    WP["WordPress 6 / PHP 8.3<br/>container: <code>django-ml-wp</code><br/>port: 80"]:::svc
-    WPDB[(MariaDB 11<br/>service: <code>wpdb</code><br/>port: 3306)]:::db
+    Web["Next.js dev\ncontainer: django-ml-web\nport: 3000"]:::svc
+    Django["Django dev server\ncontainer: django-ml-api\nport: 8000"]:::svc
+    PG[("Postgres 16\nservice: db\nport: 5432")]:::db
+    WP["WordPress 6 / PHP 8.3\ncontainer: django-ml-wp\nport: 80"]:::svc
+    WPDB[("MariaDB 11\nservice: wpdb\nport: 3306")]:::db
 
     %% Service links
-    Web -- "internal HTTP<br/><code>http://django:8000</code>" --> Django
-    Django -- "psql 5432<br/><code>postgresql://app:app@db:5432/app</code>" --> PG
-    WP -- "mysql 3306<br/><code>wpdb:3306</code>" --> WPDB
+    Web -- "http://django:8000" --> Django
+    Django -- "postgresql://app:app@db:5432/app" --> PG
+    WP -- "wpdb:3306" --> WPDB
 
     %% Volumes & bind mounts
-    Web --- VNM["volume: <code>web_node_modules</code>"]:::vol
-    PG  --- VPG["volume: <code>db_data</code>"]:::vol
-    WP  --- VWP["volume: <code>wp_data</code>"]:::vol
-    WPDB --- VWPD["volume: <code>wp_db_data</code>"]:::vol
+    Web --- VNM["volume: web_node_modules"]:::vol
+    PG  --- VPG["volume: db_data"]:::vol
+    WP  --- VWP["volume: wp_data"]:::vol
+    WPDB --- VWPD["volume: wp_db_data"]:::vol
 
-    Web --- BWEB["bind: <code>./web → /app</code>"]:::vol
-    Django --- BDJ["bind: <code>./django → /app</code>"]:::vol
-    WP --- BTH["bind: <code>./wordpress/wp-content/themes/pomolobee-theme → /var/www/html/wp-content/themes/pomolobee-theme</code>"]:::vol
-    WP --- BPL["bind: <code>./wordpress/wp-content/plugins/pomolobee → /var/www/html/wp-content/plugins/pomolobee</code>"]:::vol
+    Web --- BWEB["bind: ./web -> /app"]:::vol
+    Django --- BDJ["bind: ./django -> /app"]:::vol
+    WP --- BTH["bind: ./wordpress/wp-content/themes/pomolobee-theme -> /var/www/html/wp-content/themes/pomolobee-theme"]:::vol
+    WP --- BPL["bind: ./wordpress/wp-content/plugins/pomolobee -> /var/www/html/wp-content/plugins/pomolobee"]:::vol
   end
 
-  %% ====== Port mappings (host → containers) ======
-  H8080 -->|":8080 → 3000"| Web
-  H8001 -->|":8001 → 8000"| Django
-  H8082 -->|":8082 → 80"|   WP
+  %% =========== Port mappings (host -> containers) ===========
+  H8080 -->|"8080 -> 3000"| Web
+  H8001 -->|"8001 -> 8000"| Django
+  H8082 -->|"8082 -> 80"| WP
+
 ```
 
 ---
@@ -131,7 +132,7 @@ docker compose --profile dev up -d --build
 * Don’t run `runserver` or `npx next dev` manually—compose already does it.
 
 ### 5) Sanity checks
-
+S
 ```bash
 docker compose ps
 curl -s http://localhost:8001/health      # Django -> {"status":"ok"}
@@ -171,9 +172,11 @@ If you added `wpcli` service, you can run your script to set title, tagline, per
 
 ```bash
 chmod +x wordpress/wp-content/themes/pomolobee-theme/scripts/init-site.sh
+docker compose exec wordpress bash -lc 'install -d -m 775 -o www-data -g www-data /var/www/html/wp-content/uploads'
+
 docker compose run --rm wpcli bash /var/www/html/wp-content/themes/pomolobee-theme/scripts/init-site.sh
 ```
-
+ 
 > Put your logo at
 > `wordpress/wp-content/themes/pomolobee-theme/assets/images/logo.(png|svg)`
 > The script will import it and set it as the site logo.
