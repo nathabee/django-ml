@@ -1,34 +1,43 @@
-// web/app/api/login/route.ts
 import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const { username, password } = await req.json();
-  const backend = process.env.NEXT_PUBLIC_BACKEND_URL || "http://django:8000";
+  const backend = process.env.BACKEND_INTERNAL_URL ?? "http://django:8000";
 
   const r = await fetch(`${backend}/api/auth/login`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ username, password }),
+    cache: "no-store",
   });
+
+  const text = await r.text();
+  let data: any;
+  try { data = JSON.parse(text); } catch { data = { raw: text }; }
 
   if (!r.ok) {
-    return NextResponse.json({ error: "invalid credentials" }, { status: 401 });
+    const detail = data?.detail ?? "invalid credentials";
+    return NextResponse.json({ error: detail }, { status: r.status || 401 });
   }
 
-  const data = await r.json(); // { access, refresh }
+  // create response FIRST, then set cookies
   const res = NextResponse.json({ ok: true });
 
-  // store short-lived access token as HttpOnly cookie
+  const secure = process.env.NODE_ENV === "production";
   res.cookies.set("access", data.access, {
     httpOnly: true,
-    secure: false,    // set true in prod behind HTTPS
+    secure,
     sameSite: "lax",
     path: "/",
-    maxAge: 60 * 15,  // 15 minutes
+    maxAge: 60 * 15, // 15 minutes
   });
-
-  // optional: also set refresh if you plan to refresh tokens server-side later
-  // res.cookies.set("refresh", data.refresh, {...});
+  res.cookies.set("refresh", data.refresh, {
+    httpOnly: true,
+    secure,
+    sameSite: "lax",
+    path: "/",
+    maxAge: 60 * 60 * 24 * 7, // 7 days
+  });
 
   return res;
 }

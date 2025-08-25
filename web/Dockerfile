@@ -10,3 +10,6 @@ COPY tsconfig.json ./tsconfig.json
 COPY next.config.mjs ./next.config.mjs
 COPY app ./app
 EXPOSE 3000 
+# default stage (for compose)
+FROM dev AS runtime
+# no CMD here – compose provides it

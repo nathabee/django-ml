@@ -1,10 +1,11 @@
-// web/app/page.tsx
-// web/app/page.tsx  (only the fetch part changed)
+// web/app/page.tsx 
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation"; 
 
 export default function Home() {
+  const router = useRouter();       
   const [hello, setHello] = useState<string>("loading...");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -36,6 +37,7 @@ export default function Home() {
       return;
     }
     setLoginMsg("Login OK");
+    router.push("/dashboard");     
   };
 
   const fetchMe = async () => {

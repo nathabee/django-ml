@@ -1,5 +1,26 @@
 name: django-ml
 
+x-django-env: &django_env
+  DJANGO_SETTINGS_MODULE: config.settings
+  SECRET_KEY: ${SECRET_KEY:-dev-insecure}
+  DEBUG: ${DEBUG:-1}
+  ALLOWED_HOSTS: ${ALLOWED_HOSTS:-*}
+  # add these if keeping the old settings.py style:
+  DATABASE_NAME: ${POSTGRES_DB:-app}
+  DATABASE_USER: ${POSTGRES_USER:-app}
+  DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-app}
+  DATABASE_HOST: db
+  DATABASE_PORT: "5432"
+  BYPASS_MEDIA: ${BYPASS_MEDIA:-1}
+x-web-env: &web_env
+  BACKEND_INTERNAL_URL: ${BACKEND_INTERNAL_URL:-http://django:8000}
+  PORT: ${WEB_PORT:-3000}
+
+x-db-env: &db_env
+  POSTGRES_DB: ${POSTGRES_DB:-app}
+  POSTGRES_USER: ${POSTGRES_USER:-app}
+  POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-app}
+
 services:
   django:
     build:
@@ -7,10 +28,7 @@ services:
       target: ${DJANGO_BUILD_TARGET:-dev}
     container_name: django-ml-api
     environment:
-      - DJANGO_SETTINGS_MODULE=config.settings
-      - DATABASE_URL=postgresql://app:app@db:5432/app
-      - SECRET_KEY=changeme-in-dev
-      - ALLOWED_HOSTS=*
+      <<: *django_env
     depends_on:
       db:
         condition: service_started
@@ -29,8 +47,7 @@ services:
       target: ${WEB_BUILD_TARGET:-dev}
     container_name: django-ml-web
     environment:
-      - BACKEND_INTERNAL_URL=http://django:8000
-      - PORT=3000
+      <<: *web_env
     ports:
       - "8080:3000"
     depends_on:
@@ -44,10 +61,9 @@ services:
 
   db:
     image: postgres:16
+    container_name: django-ml-db
     environment:
-      - POSTGRES_DB=app
-      - POSTGRES_USER=app
-      - POSTGRES_PASSWORD=app
+      <<: *db_env
     volumes:
       - db_data:/var/lib/postgresql/data
     profiles: ["dev"]

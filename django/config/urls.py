@@ -1,29 +1,46 @@
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from django.http import JsonResponse
-from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-
-from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import IsAuthenticated
-
-@api_view(["GET"])
-@permission_classes([IsAuthenticated])
-def me(request):
-    user = request.user
-    return JsonResponse({"id": user.id, "username": user.username})
+from django.conf import settings
+from django.conf.urls.static import static
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+from django.conf.urls import handler404, handler500
  
 
+def custom_404(request, exception=None):
+    return JsonResponse({
+        "error": {
+            "code": "404_NOT_FOUND",
+            "message": "The requested endpoint does not exist."
+        }
+    }, status=404)
 
-def health(_): return JsonResponse({"status": "ok"})
-def hello(_): return JsonResponse({"service": "django", "message": "Hello from Django"})
+def custom_500(request):
+    return JsonResponse({
+        "error": {
+            "code": "500_INTERNAL_ERROR",
+            "message": "An unexpected error occurred."
+        }
+    }, status=500)
+
+handler404 = custom_404
+handler500 = custom_500
+
+
+def health(_):
+    return JsonResponse({"status": "ok"})
+
 
 urlpatterns = [
     path("admin/", admin.site.urls),
     path("health", health),
-    path("api/hello", hello),
 
-    # JWT auth
-    path("api/auth/login", TokenObtainPairView.as_view(), name="token_obtain_pair"),
-    path("api/auth/refresh", TokenRefreshView.as_view(), name="token_refresh"),
-    path("api/me", me),
+    path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
+    path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
+
+    path("api/", include("UserCore.urls")),      # hello, auth, me
+    path("api/", include("PomoloBeeCore.urls")),   #   app’s endpoints
 ]
+
+if settings.BYPASS_MEDIA:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

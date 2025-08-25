@@ -27,3 +27,6 @@ web/.env
 Thumbs.db
 /web/.next/
 /django/.env
+
+# for me to ignore
+*.old

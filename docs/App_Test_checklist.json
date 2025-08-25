@@ -19,7 +19,7 @@
           "description": "Repo is cloned and compose.yaml present at project root.",
           "expected": "`compose.yaml` exists; `django/` and `web/` directories present.",
           "state": "",
-          "details": "Verify files exist:\n  ls -la | grep -E 'compose.yaml|docker-compose.yaml'\n  test -f compose.yaml && echo 'compose.yaml OK'\n  test -d django && echo 'django/ OK'\n  test -d web && echo 'web/ OK'\nOptional sanity:\n  git status --porcelain\n  head -n 20 compose.yaml"
+          "details": "Verify files exist:\n  ls -la | grep -E 'compose.yaml' ;  test -f compose.yaml  && echo 'compose.yaml OK' ;  test -d django && echo 'django/ OK' ;  test -d web && echo 'web/ OK'  Optional sanity:\n  git status --porcelain\n  head -n 20 compose.yaml"
         },
         {
           "test": "Seed node_modules with npm install (first run)",
