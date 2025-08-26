@@ -28,6 +28,13 @@ Thumbs.db
 /web/.next/
 /django/.env
 
+# plugins
+**/node_modules/
+wordpress/build/
+*.zip
+wordpress/plugin-src/**/dist/
+wordpress/plugin-src/**/build/
+
 # database export
 backups/**/*.sql*
 

@@ -258,6 +258,30 @@ in root project
 ```bash
 bash scripts/backup.sh
 ``` 
+
+## wordpress plugins
+
+**pomolobee**
+
+From the wordpress/plugin-src/pomolobee/ folder:
+
+```bash
+npm install
+npm run build
+``` 
+📦 Installation
+```bash
+build_zip.sh
+install_plugin.sh
+``` 
+Go to **[http://localhost:8082](http://localhost:8082)** WP Admin > Plugins 
+check the plugin is there and activate if necessary
+Activate the plugin.
+Visit Settings > Competence Settings to configure the API endpoint.
+in our project docker example, the django dev container is http://localhost:8001/api 
+
+
+
 ---
 ## data structure
 
