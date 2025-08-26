@@ -28,9 +28,12 @@ x-wp-env: &wp_env
   WORDPRESS_DB_NAME: ${WP_DB_NAME:-wordpress}
   # optional nice-to-haves:
   WORDPRESS_TABLE_PREFIX: ${WP_TABLE_PREFIX:-wp_}
+  # Make WP aware of its URL in dev:
   WORDPRESS_CONFIG_EXTRA: |
     define('WP_DEBUG', true);
     define('WP_DEBUG_LOG', true);
+    define('WP_HOME', 'http://localhost:8082');
+    define('WP_SITEURL', 'http://localhost:8082');
 
 x-wpdb-env: &wpdb_env
   MYSQL_DATABASE: ${WP_DB_NAME:-wordpress}
@@ -112,24 +115,18 @@ services:
         condition: service_healthy
     environment:
       <<: *wp_env
-      # Make WP aware of its URL in dev:
-      WORDPRESS_CONFIG_EXTRA: |
-        define('WP_DEBUG', true);
-        define('WP_DEBUG_LOG', true);
-        define('WP_HOME', 'http://localhost:8082');
-        define('WP_SITEURL', 'http://localhost:8082');
     ports:
       - "8082:80"
     volumes:
       - wp_data:/var/www/html
-      # live-mount your custom plugin/theme during dev:
-      - ./wordpress/wp-content/plugins/pomolobee:/var/www/html/wp-content/plugins/pomolobee
-      - ./wordpress/wp-content/themes/pomolobee-theme:/var/www/html/wp-content/themes/pomolobee-theme
+      - ./wordpress/wp-content:/var/www/html/wp-content
+      # ./wordpress/wp-content/plugins/pomolobee:/var/www/html/wp-content/plugins/pomolobee
+      # ./wordpress/wp-content/themes/pomolobee-theme:/var/www/html/wp-content/themes/pomolobee-theme
     profiles: ["dev"]
 
   wpcli:
     # service to export wordpress
-    image: wordpress:cli-php8.3
+    image: wordpress:cli
     user: "33:33"
     depends_on:
       wordpress:
@@ -141,7 +138,9 @@ services:
       WORDPRESS_DB_NAME: ${WP_DB_NAME:-wordpress}
     volumes:
       - wp_data:/var/www/html
-      - ./wordpress/wp-content/themes/pomolobee-theme:/var/www/html/wp-content/themes/pomolobee-theme
+      - ./wordpress/wp-content:/var/www/html/wp-content
+      # ./wordpress/wp-content/plugins/pomolobee:/var/www/html/wp-content/plugins/pomolobee
+      # ./wordpress/wp-content/themes/pomolobee-theme:/var/www/html/wp-content/themes/pomolobee-theme
     working_dir: /var/www/html
     profiles: ["dev"]
 

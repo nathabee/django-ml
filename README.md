@@ -1,7 +1,3 @@
-Great start! I tweaked your “install after reset” steps to be accurate, minimal, and repeatable. Copy/paste this into your README and you’ll be golden.
-
----
-
 # django-ml : Dockerized PomoloBee (Django + Next.js + Postgres + WordPress + MariaDB)
 
 A learning stack for Docker + multi-service development:
@@ -24,20 +20,20 @@ flowchart LR
   %% =========== Host (ports) ===========
   subgraph Host["Host (localhost)"]
     direction TB
-    H8080["localhost:8080\nWeb"]:::host
-    H8001["localhost:8001\nDjango API"]:::host
-    H8082["localhost:8082\nWordPress"]:::host
+    H8080["localhost:8080 Web"]:::host
+    H8001["localhost:8001 Django API"]:::host
+    H8082["localhost:8082 WordPress"]:::host
   end
 
   %% =========== Docker network ===========
   subgraph Docker["Docker (default bridge network)"]
     direction LR
 
-    Web["Next.js dev\ncontainer: django-ml-web\nport: 3000"]:::svc
-    Django["Django dev server\ncontainer: django-ml-api\nport: 8000"]:::svc
-    PG[("Postgres 16\nservice: db\nport: 5432")]:::db
-    WP["WordPress 6 / PHP 8.3\ncontainer: django-ml-wp\nport: 80"]:::svc
-    WPDB[("MariaDB 11\nservice: wpdb\nport: 3306")]:::db
+    Web["Next.js dev container: django-ml-web port: 3000"]:::svc
+    Django["Django dev server container: django-ml-api port: 8000"]:::svc
+    PG[("Postgres 16 service: db port: 5432")]:::db
+    WP["WordPress 6 / PHP 8.3 container: django-ml-wp port: 80"]:::svc
+    WPDB[("MariaDB 11 service: wpdb port: 3306")]:::db
 
     %% Service links
     Web -- "http://django:8000" --> Django
@@ -163,23 +159,35 @@ docker compose exec django python manage.py createsuperuser
 
 ### 7) Finish WordPress installer (first run)
 
-1. Open **[http://localhost:8082](http://localhost:8082)** and complete the standard WordPress install (site title, admin user, password).
-2. Activate the **Pomolobee** theme (if not already).
+Open **[http://localhost:8082](http://localhost:8082)** and create a user to initialise the site 
 
-### 8) Apply WordPress site options with wpcli (optional but recommended)
-
-If you added `wpcli` service, you can run your script to set title, tagline, permalinks, and logo reproducibly:
-
-```bash
-chmod +x wordpress/wp-content/themes/pomolobee-theme/scripts/init-site.sh
-docker compose exec wordpress bash -lc 'install -d -m 775 -o www-data -g www-data /var/www/html/wp-content/uploads'
-
-docker compose run --rm wpcli bash /var/www/html/wp-content/themes/pomolobee-theme/scripts/init-site.sh
-```
  
-> Put your logo at
-> `wordpress/wp-content/themes/pomolobee-theme/assets/images/logo.(png|svg)`
-> The script will import it and set it as the site logo.
+### 8) Apply WordPress site options with wpcli  (permission, activate theme, permalinks, logo, etc.)
+
+
+* Put your logo at `wordpress/wp-content/themes/pomolobee-theme/assets/images/logo.(png|svg)`
+
+* run the init script :
+
+```bash 
+./scripts/wp-init.sh
+``` 
+
+The script will fix host bind-mount permissions and import the logo and set it as the site logo.
+
+
+
+# 5) Wordpress Health check:
+
+* log in http://localhost:8082 and check that the website is available
+
+* run the checks :
+```bash
+./scripts/health-check.sh
+``` 
+
+
+
 
 ### 9) Export Site Editor changes back into the theme (so they live in Git)
 
@@ -196,6 +204,21 @@ If you customize colors/templates in **Appearance → Editor**:
 ---
 
 ## Useful commands
+
+**Developpement only : Total reset image,data,container and reinstallation (danger)**
+
+The following script delete all and reinstall docker completly in the dev environment
+```bash
+./scripts/total-reset.sh
+```
+
+this change wordpress repository to www-data:wwww-data
+if you keep on developping there in order to make update for github, run at the root of the repository:
+```bash
+sudo setfacl -R -m u:"$USER":rwx wordpress
+sudo setfacl -R -d -m u:"$USER":rwx wordpress
+```
+  
 
 **Logs / status**
 

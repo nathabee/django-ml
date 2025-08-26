@@ -2,33 +2,50 @@
 set -euo pipefail
 cd /var/www/html
 
-# ensure uploads dir is writable before importing media
- 
-
-# ensure WP is installed (you must finish the browser installer first)
+# Make sure WP is installed
 if ! wp core is-installed > /dev/null 2>&1; then
-  echo "❌ WordPress not installed yet. Finish installer at http://localhost:8082 first."
+  echo "❌ WordPress not installed yet. Open http://localhost:8082 to finish setup."
   exit 1
 fi
 
-# activate your theme
+# Parent theme if you’re a child of 2025
+if grep -qi '^Template:\s*twentytwentyfive' wp-content/themes/pomolobee-theme/style.css; then
+  wp theme is-installed twentytwentyfive || wp theme install twentytwentyfive
+fi
+
+# Activate your theme (idempotent)
 wp theme activate pomolobee-theme || true
 
-# site basics
+# Site basics + permalinks
 wp option update blogname 'PomoloBee'
 wp option update blogdescription 'Smart orchard & field management'
-
-# permalinks
 wp option update permalink_structure '/%postname%/'
+wp rewrite flush --hard || true   # may warn; that’s fine if .htaccess is present
 
-# import & set logo from theme assets (if present)
-LOGO="/var/www/html/wp-content/themes/pomolobee-theme/assets/images/logo.png"
-if [ -f "$LOGO" ]; then
-  ID="$(wp media import "$LOGO" --porcelain)"
-  echo "Imported logo attachment ID: $ID"
-  wp theme mod set custom_logo "$ID" || true
-  wp option add site_logo "$ID" || wp option update site_logo "$ID" || true
+# Import & set logo
+LOGO='/var/www/html/wp-content/themes/pomolobee-theme/assets/images/logo.png'
+if [[ -f "$LOGO" ]]; then
+  CUR="$(wp theme mod get custom_logo --format=value 2>/dev/null || true)"
+  if [[ -z "${CUR:-}" || "$CUR" == "0" ]]; then
+    echo "Importing logo from $LOGO ..."
+    ID="$(wp media import "$LOGO" --porcelain)"
+    echo "✅ Imported attachment ID: $ID"
+    wp theme mod set custom_logo "$ID"
+    wp option update site_logo "$ID" || wp option add site_logo "$ID"
+  else
+    echo "Logo already set to attachment ID: $CUR"
+  fi
+else
+  echo "⚠️ Logo file not found at $LOGO"
 fi
+
+# Debug: show attachments + current logo
+echo "— Attachments —"
+wp post list --post_type=attachment --fields=ID,post_title,guid,post_mime_type --format=table
+echo -n "custom_logo: "
+wp theme mod get custom_logo || true
+echo -n "site_logo: "
+wp option get site_logo || true
 
 wp cache flush || true
 echo "✅ init-site done."
