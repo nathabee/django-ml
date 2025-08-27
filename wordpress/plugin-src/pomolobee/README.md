@@ -15,7 +15,7 @@ After activating the plugin:
   * `/pomolobee_error` – ⚠️ Error fallback
 * 🛠️ An **admin configuration page** is added under “Settings > PomoloBee Settings”.
 
-  * There, you can set the base API URL (e.g., `http://nathabee.de/api/`) used by the frontend to communicate with the Django backend.
+  * There, you can set the base API URL (e.g., `https://localhost:8001/`) used by the frontend to communicate with the Django backend.
 * 🧠 The plugin provides a React UI with internal routing (`react-router-dom`) that seamlessly operates inside WordPress view rendering.
 
 ### 🔸 2. Compilation & Installation
@@ -82,79 +82,3 @@ The React app and the WordPress plugin both rely on shared modules:
 
 ---
   
-
-## 🛠️ THE Plan: Well-Structured and Scalable
-
-
-### 💡 🛠️ NEXT UP:
-- [ ] ✅ *Started:* Transform React app → WordPress plugin (core working, 10% done)
-- [ ] Add mock mode toggle (via window.pomolobeeSettings.mockMode)
-- [ ] Add mock data file in shared (shortreports.ts)
-- [ ] Adapt useShortReports() to support real/mock switch
-- [ ] Extract shared into library; keep plugin stable (add non-regression test)
-- [ ] Build React standalone app using shared code
-- [ ] Use fake data to compile a static standalone app for GitHub Pages
-
-| Strategy                                               | Why it Helps                             |
-| ------------------------------------------------------ | ---------------------------------------- |
-| ✅ **Write a clean README** (you're already doing this) | Shows communication skills               |
-| 🎥 **Record a 2-min demo video**                       | Recruiters *love* this – instant wow     |
-| ✍️ **Blog post / LinkedIn post**                       | Explains your thinking, shows confidence |
-| 📦 **Mock mode** for portfolio/demo                    | Lets people test without needing Django  |
-| 🧪 Mention tests or CI setup                           | Signals “team-ready” professionalism     |
-
-
-### ✅ **1. React app → WordPress plugin**
- 
-
-* Shared TS + React code
-* Custom Gutenberg block
-* Clean routing
-* Auth + data fetching hooks
-* Packaged builds ✅
-
-### 🚀 **2. Add a "mock mode" config**
-
-Smart move for:
-
-* Demos to customers with “real-feeling” data
-* Portfolios that don’t depend on real backend
-* Offline/test environments
-
-**Suggestion**: You could control mock mode with:
-
-```ts
-const useMock = () => window.pomolobeeSettings?.mockMode === true;
-```
-
-And load fake data conditionally in `useShortReports()` or other hooks.
-
-### 🧩 **3. Extract clean shared logic**
-
-This is what will unlock:
-
-* A polished **React standalone** version
-* Future use in other CMS platforms
-* Unit testability and clean separation
-
-Structure will look like:
-
-```
-/shared/
-  components/
-  hooks/
-  utils/
-  types/
-
-/react-app/
-  pages/
-  entry.tsx
-
-/pomolobee-wp/
-  src/
-  app/
-  pages/
-```
- 
----
- 

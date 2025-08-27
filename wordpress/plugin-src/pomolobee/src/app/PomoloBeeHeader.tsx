@@ -6,9 +6,9 @@ import { Link } from 'react-router-dom';
 
 
 const PomoloBeeHeader = () => {
-  const { isLoggedIn, logout, activeEleve, activeCatalogues, activeLayout, user } = useAuth();
+  const { isLoggedIn, logout, activeFarm , user } = useAuth();
 
-  const canAccessReport = activeEleve && activeCatalogues.length && activeLayout && user;
+  const canAccessFarm = activeFarm && user;
 
 
   return (
@@ -20,20 +20,13 @@ const PomoloBeeHeader = () => {
           {isLoggedIn ? (
             <>
               <Link to="/pomolobee_dashboard" className="nav-link">📊 Dashboard</Link>
-              <Link to="/pomolobee_student_mgt" className="nav-link">👨‍🎓 Student Management</Link>
-              <Link to="/pomolobee_pdf_conf" className="nav-link">🛠️ PDF Setup</Link>
-              <Link to="/pomolobee_catalogue_mgt" className="nav-link">📚 Catalogue Management</Link>
-              {canAccessReport ? (
+              {canAccessFarm ? (
                 <>
-                  <Link to="/pomolobee_report_mgt" className="nav-link">📄 Report Management</Link>
-                  <Link to="/pomolobee_overview_test" className="nav-link">🧪 Ongoing Tests</Link>
-                  <Link to="/pomolobee_pdf_view" className="nav-link">🖨️ PDF Viewer</Link>
+                  <Link to="/pomolobee_Farm" className="nav-link">📄 Farm Management</Link> 
                 </>
               ) : (
                 <>
-                  <span className="nav-link disabled">📄 Report Management</span>
-                  <span className="nav-link disabled">🧪 Ongoing Tests</span>
-                  <span className="nav-link disabled">🖨️ PDF Viewer</span>
+                  <span className="nav-link disabled">Please select a farm</span>
                 </>
               )}
 

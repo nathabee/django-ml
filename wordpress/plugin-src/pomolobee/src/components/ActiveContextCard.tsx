@@ -1,25 +1,18 @@
+// src/components/ActiveContextCard.tsx
 'use client';
-
 import React from 'react';
 import { useAuth } from '@context/AuthContext';
-import {formatDate} from '@utils/helper'; 
 
 const ActiveContextCard: React.FC = () => {
-  const { activeEleve, activeCatalogues, activeLayout, user , activeReport} = useAuth();
- 
+  const { user, activeFarm, activeField } = useAuth();
 
   return (
-    <div className="active-context-card">
+    <div className="card p-3">
       <h3>🔎 Active Context</h3>
-      <ul>
-        <li><strong>👤 Élève:</strong> {activeEleve ? `${activeEleve.prenom} ${activeEleve.nom}` : 'Aucun élève sélectionné'}</li>
-        <li><strong>📚 Catalogue(s):</strong> {activeCatalogues?.length > 0
-          ? activeCatalogues.map(c => c.description).join(', ')
-          : 'Aucun catalogue sélectionné'}
-        </li>
-        <li><strong>📝 Layout:</strong> {activeLayout ? `Layout #${activeLayout.id}` : 'Aucune mise en page sélectionnée'}</li>
-        <li><strong>👨‍🏫 Professeur:</strong> {user ? `${user.first_name} ${user.last_name}` : 'Non connecté'}</li>
-        <li><strong>📄 Report :</strong> {activeReport  ? `${activeReport.id} daté du ${formatDate(activeReport.updated_at)}` : 'Pas de rapport sélectionné'}</li>
+      <ul className="mb-0">
+        <li><strong>👨‍🌾 User:</strong> {user ? `${user.first_name} ${user.last_name} (${user.username})` : 'Not logged in'}</li>
+        <li><strong>🏡 Farm:</strong> {activeFarm ? activeFarm.name : 'None selected'}</li>
+        <li><strong>🗺️ Field:</strong> {activeField ? `${activeField.name} (${activeField.short_name})` : 'None selected'}</li>
       </ul>
     </div>
   );

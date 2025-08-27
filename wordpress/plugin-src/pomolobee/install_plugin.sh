@@ -2,7 +2,7 @@
 
 set -e
 
-PLUGIN_NAME="pomolobee-wp"
+PLUGIN_NAME="pomolobee"
 BUILD_PLUGIN="dist/$PLUGIN_NAME"
 WORDPRESS_PLUGIN_DIR="../../wp-content/plugins/"
 

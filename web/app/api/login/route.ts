@@ -4,7 +4,7 @@ export async function POST(req: NextRequest) {
   const { username, password } = await req.json();
   const backend = process.env.BACKEND_INTERNAL_URL ?? "http://django:8000";
 
-  const r = await fetch(`${backend}/api/auth/login`, {
+  const r = await fetch(`${backend}/api/auth/login/`, {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ username, password }),

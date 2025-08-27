@@ -1,20 +1,13 @@
+// src/components/UserDisplay.tsx
 'use client';
-
 import React from 'react';
-import { User } from '@mytypes/user'; // Use your actual alias for types
+import { useAuth } from '@context/AuthContext';
 
-interface UserDisplayProps {
-  user?: User | null;
-}
-
-const UserDisplay: React.FC<UserDisplayProps> = ({ user }) => {
-  if (!user) {
-    return <p>No user data available.</p>;
-  }
-
+const UserDisplay: React.FC = () => {
+  const { user } = useAuth();
   return (
-    <div>
-      {user.first_name} {user.last_name} — ID: {user.username}, Language: {user.lang}, Roles: {user.roles.join(', ')}
+    <div className="mb-3">
+      {user ? <span>Welcome, <strong>{user.first_name} {user.last_name}</strong></span> : null}
     </div>
   );
 };

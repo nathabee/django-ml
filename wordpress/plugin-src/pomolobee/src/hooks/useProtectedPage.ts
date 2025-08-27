@@ -1,15 +1,20 @@
-// hooks/useProtectedPage.ts
+// src/hooks/useProtectedPage.ts
+'use client';
 import { useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { getToken } from '@utils/jwt';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { getToken, isTokenExpired } from '@utils/jwt';
 
 export const useProtectedPage = () => {
   const navigate = useNavigate();
+  const { pathname } = useLocation();
 
   useEffect(() => {
     const token = getToken();
-    if (!token) {
+    const needsAuth = !token || isTokenExpired(token);
+    const isOnLogin = pathname.includes('pomolobee_login');
+
+    if (needsAuth && !isOnLogin) {
       navigate('/pomolobee_login');
     }
-  }, [navigate]);
+  }, [navigate, pathname]);
 };

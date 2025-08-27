@@ -52,6 +52,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",  # good to have
     'UserCore.apps.UserCoreConfig',
     'PomoloBeeCore.apps.PomoloBeeCoreConfig',  # main app  
+    'corsheaders',   #DEV ONLY
 ]
  
 REST_FRAMEWORK = {
@@ -71,11 +72,12 @@ REST_FRAMEWORK = {
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
-    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware', 
 ]
 
 ROOT_URLCONF = 'config.urls'
@@ -136,6 +138,10 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Dev-only: allow WP origin
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:8082",
+]
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/

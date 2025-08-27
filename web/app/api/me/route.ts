@@ -4,7 +4,7 @@ const backend = process.env.BACKEND_INTERNAL_URL ?? "http://django:8000";
 const secure = process.env.NODE_ENV === "production";
 
 async function callMe(access: string) {
-  return fetch(`${backend}/api/me`, {
+  return fetch(`${backend}/api/me/`, {
     headers: { Authorization: `Bearer ${access}` },
     cache: "no-store",
   });
@@ -24,7 +24,7 @@ export async function GET(req: NextRequest) {
 
   // if unauthorized and we have refresh, try to refresh once
   if (r.status === 401 && refresh) {
-    const rr = await fetch(`${backend}/api/auth/refresh`, {
+    const rr = await fetch(`${backend}/api/auth/refresh/`, {
       method: "POST",
       headers: { "content-type": "application/json" },
       body: JSON.stringify({ refresh }),

@@ -76,22 +76,21 @@ docker compose --profile "$PROFILE" up -d --build
 # Django maps host 8001 -> container 8000
 wait_http_200 "http://localhost:8001/health" 90 || true
 
-# --- load Django fixtures ---------------------------------------
-if yes_no "Load default Django fixtures (farms/fields/fruits/rows/superuser)?" default_yes; then
-  echo "📥 Loading fixtures into Django..."
-  set +e
-  docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_superuser.json || echo "⚠️ superuser fixture failed (ok if you’ll create one interactively)"
-  docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_farms.json   || echo "⚠️ farms fixture failed"
-  docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_fields.json  || echo "⚠️ fields fixture failed"
-  docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_fruits.json  || echo "⚠️ fruits fixture failed"
-  docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_rows.json    || echo "⚠️ rows fixture failed"
-  set -e
-fi
+# --- load Django fixtures --------------------------------------- 
+echo "📥 Loading fixtures into Django..."
+set +e
+docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_superuser.json || echo "⚠️ superuser fixture failed (ok if you’ll create one interactively)"
+docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_farms.json   || echo "⚠️ farms fixture failed"
+docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_fields.json  || echo "⚠️ fields fixture failed"
+docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_fruits.json  || echo "⚠️ fruits fixture failed"
+docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_rows.json    || echo "⚠️ rows fixture failed"
+set -e
+ 
 
 # --- create superuser (optional) --------------------------------
-if yes_no "Create Django superuser now (interactive)?" default_no; then
-  docker compose exec django python manage.py createsuperuser
-fi
+echo "Create Django superuser now (interactive)?" 
+docker compose exec django python manage.py createsuperuser
+
 
 # --- WordPress init ---------------------------------------------
 echo "Run WordPress init script (activate theme, permalinks, logo)?"
@@ -107,13 +106,13 @@ if yes_no "Ready?" default_no; then
 fi
 
 # --- health checks ----------------------------------------------
-if yes_no "Run health checks now?" default_yes; then
-  if [[ -x ./scripts/health-check.sh ]]; then
-    ./scripts/health-check.sh
-  else
-    echo "⚠️ ./scripts/health-check.sh not found or not executable; skipping."
-  fi
+echo "Run health checks now?" 
+if [[ -x ./scripts/health-check.sh ]]; then
+  ./scripts/health-check.sh
+else
+  echo "⚠️ ./scripts/health-check.sh not found or not executable; skipping."
 fi
+ 
 
 echo
 echo "✅ Done."

@@ -109,6 +109,8 @@ services:
   
   wordpress:
     image: wordpress:6-php8.3-apache
+    build:
+      context: ./wordpress
     container_name: django-ml-wp
     depends_on:
       wpdb:
@@ -120,8 +122,6 @@ services:
     volumes:
       - wp_data:/var/www/html
       - ./wordpress/wp-content:/var/www/html/wp-content
-      # ./wordpress/wp-content/plugins/pomolobee:/var/www/html/wp-content/plugins/pomolobee
-      # ./wordpress/wp-content/themes/pomolobee-theme:/var/www/html/wp-content/themes/pomolobee-theme
     profiles: ["dev"]
 
   wpcli:
@@ -138,9 +138,7 @@ services:
       WORDPRESS_DB_NAME: ${WP_DB_NAME:-wordpress}
     volumes:
       - wp_data:/var/www/html
-      - ./wordpress/wp-content:/var/www/html/wp-content
-      # ./wordpress/wp-content/plugins/pomolobee:/var/www/html/wp-content/plugins/pomolobee
-      # ./wordpress/wp-content/themes/pomolobee-theme:/var/www/html/wp-content/themes/pomolobee-theme
+      - ./wordpress/wp-content:/var/www/html/wp-content 
     working_dir: /var/www/html
     profiles: ["dev"]
 

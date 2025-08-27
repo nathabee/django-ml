@@ -16,7 +16,7 @@ export function getApiUrl(): string {
   }
 
   console.warn('⚠️ Fallback to localhost in utils helper getApiUrl');
-  return 'http://localhost:8000/api';
+  return 'http://localhost:8001/api';
 }
 
 

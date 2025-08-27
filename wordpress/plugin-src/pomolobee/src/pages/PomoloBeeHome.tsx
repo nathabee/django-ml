@@ -1,111 +1,152 @@
 // src/pages/PomoloBeeHome.tsx
-// for wordpress only
+// WordPress plugin entry page (home/landing)
 
-// src/pages/PomoloBeeHome.tsx
+'use client';
+
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '@context/AuthContext';
 
-const PomoloBeeHome = () => (
-  <div className="container">
-
-    <h2>🧩 WordPress Plugin for Evaluation Project</h2>
-
-    <p>
-      This WordPress plugin embeds a modern <strong>React single-page application</strong> directly inside a WordPress page.
-      It demonstrates how a dynamic frontend (built with React, TypeScript, and CSS) can be integrated with a traditional WordPress environment, while communicating securely with a <strong>Django-based REST API backend</strong>.
-    </p>
-    <p>
-      The goal is to offer a seamless user experience for educators, by combining the familiar content management of WordPress with powerful, interactive tools designed for evaluating early childhood competencies.
-    </p>
-
-
-    <h2>🏫 Overview of the Kindergarten Evaluation Project</h2>
-    <p>
-      This project aims to create a platform similar to the one used by French professors for evaluating the developmental level of kindergarten students. The purpose of these evaluations is to identify students who may need additional support in early education.
-    </p>
-    <p>The platform is designed to assist teachers in assessing key competencies, including:</p>
-    <ul>
-      <li>Language comprehension and vocabulary</li>
-      <li>Basic mathematical understanding</li>
-      <li>Logical thinking and problem-solving skills</li>
-    </ul>
-    <p>
-      The system allows teachers to enter students' results into a user-friendly interface, compare them with thresholds, and generate reports that highlight areas where additional support is needed.
-    </p>
-
-    <h3>🔧 Key Technologies</h3>
-    <ul>
-      <li><strong>Frontend:</strong> React, CSS, and TypeScript</li>
-      <li><strong>Backend:</strong> Python with Django</li>
-      <li><strong>Database:</strong> MySQL</li>
-      <li><strong>API Docs:</strong> Swagger</li>
-    </ul>
-
-
-
-    <div className="flex-container">
-      <div className="flex-item iframe-container">
-        <iframe src="https://nathabee.de/static/html/overview.html" title="Overview" style={{ width: '100%', height: '400px', border: '1px solid #ccc' }} />
-      </div>
-      <div className="flex-item info-container">
-        <img src="https://img.shields.io/badge/status-work%20in%20progress-yellow" alt="Work In Progress" />
-        <h2>⚠️ Work In Progress</h2>
-        <p><strong>This project is currently under development and is not yet stable.</strong></p>
-        <ul>
-          <li><strong>Features:</strong> Not all planned features are implemented yet.</li>
-          <li><strong>Stability:</strong> There may be bugs and incomplete functionalities.</li>
-          <li><strong>Documentation:</strong> Work in progress.</li>
-        </ul>
-
-        <p>
-          GitHub source:{" "}
-          <a href="https://github.com/nathabee/pomolobee_project" target="_blank" rel="noopener noreferrer">
-            GitHub Repo
-          </a>
-        </p>
-
-        <p>
-          Demo version on GitHub Pages:{" "}
-          <a href="https://nathabee.github.io/pomolobee_project/" target="_blank" rel="noopener noreferrer">
-            GitHub Page Demo
-          </a>
-        </p>
-        <p>This static demo uses mocked APIs but reflects the actual frontend design.</p>
+const FeatureCard: React.FC<{ title: string; children: React.ReactNode; emoji?: string }> = ({ title, children, emoji }) => (
+  <div className="col-md-6 mb-3">
+    <div className="card h-100">
+      <div className="card-body">
+        <h5 className="card-title">{emoji ? `${emoji} ` : ''}{title}</h5>
+        <div className="card-text">{children}</div>
       </div>
     </div>
-
-    <h3>🛠 Technical Overview</h3>
-    <p>
-      The project helps assess kindergarten students' progress using modern tech. Radar diagrams will visualize competencies like language, math, and reasoning.
-    </p>
-
-    <h4>Frontend</h4>
-    <p>
-      Built with React and TypeScript. Teachers enter data, which is visualized using tools like Chart.js.
-    </p>
-
-    <h4>Backend</h4>
-    <p>
-      Django powers the backend, offering a secure API for user auth, data input, and result processing.
-    </p>
-    <ul>
-      <li>
-        Static API spec:{" "}
-        <a href="https://nathabee.de/static/html/swagger_json.html" target="_blank" rel="noopener noreferrer">
-          Swagger JSON
-        </a>
-      </li>
-    </ul>
-
-    <h4>Database</h4>
-    <p>
-      MySQL stores all student and evaluation data, allowing longitudinal tracking and secure access.
-    </p>
-
-    <h4>Visualization</h4>
-    <p>
-      Radar diagrams (e.g., via Chart.js) provide a fast overview of student skills and support needs.
-    </p>
   </div>
 );
+
+const PomoloBeeHome: React.FC = () => {
+  const navigate = useNavigate();
+  const { isLoggedIn, user, farms } = useAuth();
+
+  // Derived counts for a quick overview
+  const farmsCount = farms?.length || 0;
+  const fieldsCount = farms?.reduce((acc, f) => acc + (f.fields?.length || 0), 0) || 0;
+
+  return (
+    <div className="container my-4">
+      {/* Header / CTA */}
+      <div className="d-flex align-items-center justify-content-between flex-wrap gap-3 mb-3">
+        <div>
+          <h2 className="mb-1">🍯 PomoloBee — Orchard Monitoring</h2>
+          <p className="mb-0 text-muted">
+            WordPress plugin powered by a Django REST API. Authenticate as a farmer, select your farm & fields,
+            and manage orchard images, estimates, and history.
+          </p>
+        </div>
+
+        <div className="d-flex gap-2">
+          {!isLoggedIn ? (
+            <button className="btn btn-primary" onClick={() => navigate('/pomolobee_login')}>
+              🔐 Log in
+            </button>
+          ) : (
+            <button className="btn btn-success" onClick={() => navigate('/pomolobee_dashboard')}>
+              📊 Go to Dashboard
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* User snapshot */}
+      <div className="card mb-4">
+        <div className="card-body">
+          <h5 className="card-title">👤 Status</h5>
+          {!isLoggedIn ? (
+            <p className="mb-0">You’re not logged in. Please use the button above to authenticate.</p>
+          ) : (
+            <>
+              <p className="mb-2">
+                Logged in as <strong>{user?.first_name} {user?.last_name}</strong> ({user?.username})
+              </p>
+              <div className="d-flex flex-wrap gap-3">
+                <span className="badge text-bg-secondary">Farms: {farmsCount}</span>
+                <span className="badge text-bg-secondary">Fields: {fieldsCount}</span>
+              </div>
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* If logged in: show a compact list of farms/fields */}
+      {isLoggedIn && farmsCount > 0 && (
+        <div className="card mb-4">
+          <div className="card-body">
+            <h5 className="card-title">🏡 Your Farms & Fields</h5>
+            <div className="table-responsive">
+              <table className="table table-sm align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th style={{ width: 200 }}>Farm</th>
+                    <th>Fields</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {farms.map((farm) => (
+                    <tr key={farm.farm_id}>
+                      <td><strong>{farm.name}</strong></td>
+                      <td>
+                        {farm.fields?.length ? (
+                          farm.fields.map((fld) => (
+                            <span key={fld.field_id} className="badge text-bg-light me-2 mb-1">
+                              {fld.short_name || fld.name}
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-muted">No fields</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            <div className="mt-3">
+              <button className="btn btn-outline-primary" onClick={() => navigate('/pomolobee_dashboard')}>
+                Open Dashboard
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Feature grid */}
+      <div className="row">
+        <FeatureCard title="Authenticate & Authorize" emoji="🔑">
+          Use JWT-based login via the Django API. Farmers see their own farm; admins can view all farms.
+        </FeatureCard>
+
+        <FeatureCard title="Select Farm & Fields" emoji="🌾">
+          The dashboard lists your farm(s) and fields. Choose a field to focus all actions and context.
+        </FeatureCard>
+
+        <FeatureCard title="Images & Estimation" emoji="📷">
+          Attach images to rows, run yield estimation (ML/Manual), and keep track over time.
+        </FeatureCard>
+
+        <FeatureCard title="History & Reports" emoji="📈">
+          Browse past estimations and visualize trends across dates, rows, and fruit types.
+        </FeatureCard>
+      </div>
+
+      {/* Tech summary */}
+      <div className="card mt-4">
+        <div className="card-body">
+          <h5 className="card-title">🛠️ Tech Overview</h5>
+          <ul className="mb-0">
+            <li><strong>Frontend (WP plugin):</strong> React + TypeScript + Bootstrap (enqueued by plugin)</li>
+            <li><strong>Backend:</strong> Django REST API (JWT auth, routers, serializers)</li>
+            <li><strong>Data:</strong> Farms with nested fields, rows, images, estimations</li>
+            <li><strong>Security:</strong> Same-origin proxy or strict CORS (prod)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  );
+};
 
 export default PomoloBeeHome;

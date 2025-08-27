@@ -3,7 +3,7 @@
 set -e
 
 
-PLUGIN_NAME="pomolobee-wp"
+PLUGIN_NAME="pomolobee"
 DIST_DIR="dist/$PLUGIN_NAME"
 
 echo "🧹 Cleaning previous dist and build..."
@@ -14,7 +14,7 @@ mkdir -p "$DIST_DIR"
 #npm run build
 
 echo "📁 Copying plugin files..."
-cp pomolobee-wp.php "$DIST_DIR"
+cp $PLUGIN_NAME.php "$DIST_DIR"
 cp -r build "$DIST_DIR/build"
 
 echo "🗜️ Creating ZIP archive..."

@@ -1,25 +1,21 @@
+// src/components/Dashboard.tsx
 'use client';
 
-import React from 'react';
-import ActiveContextCard from '@components/ActiveContextCard'; 
-import ShortReportHistory from '@components/ShortReportHistory'; 
-import { useAuth } from '@context/AuthContext';
-import { useProtectedPage } from '@hooks/useProtectedPage';
+import React from "react";
+import { useProtectedPage } from "@hooks/useProtectedPage";
+import FieldSelection from "@components/FieldSelection";
+import ActiveContextCard from "@components/ActiveContextCard";
 
 const Dashboard: React.FC = () => {
-  useProtectedPage(); // handles token check + redirect
- 
+  useProtectedPage(); // redirects if not logged
 
   return (
     <>
-    <h1>DASHBOARD</h1>
-    <h2>##############################</h2>
-    <ActiveContextCard/>
-    <h2>##############################</h2>
-    <ShortReportHistory />
+      <h1>📊 Dashboard</h1>
+      <FieldSelection />
+      <ActiveContextCard />
     </>
   );
 };
 
 export default Dashboard;
-  
