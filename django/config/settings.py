@@ -37,6 +37,7 @@ DEBUG = os.getenv('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS =  os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
 print ( "ALLOWED_HOSTS=", ALLOWED_HOSTS)
 
+AUTH_USER_MODEL = "usercore.CustomUser"  #small because it must be label
 
 
 # Application definition
@@ -52,6 +53,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",  # good to have
     'UserCore.apps.UserCoreConfig',
     'PomoloBeeCore.apps.PomoloBeeCoreConfig',  # main app  
+    'CompetenceCore.apps.CompetenceCoreConfig',  # main app  
     'corsheaders',   #DEV ONLY
 ]
  
@@ -160,7 +162,7 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
  
-
+DEFAULT_USER_PASSWORD = 'DjangoPwd'  #for fixture creation
 
 # Media Storage Configuration , Enable media serving in development
 BYPASS_MEDIA = os.getenv('BYPASS_MEDIA', 'False') == 'True'

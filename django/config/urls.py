@@ -38,8 +38,9 @@ urlpatterns = [
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="swagger-ui"),
 
-    path("api/", include("UserCore.urls")),      # hello, auth, me
-    path("api/", include("PomoloBeeCore.urls")),   #   app’s endpoints
+    path("api/user/", include("UserCore.urls")),      # hello, auth, me
+    path("api/pomolobee/", include("PomoloBeeCore.urls")),   #   app’s endpoints
+    path("api/competence/", include("CompetenceCore.urls")),   #   app’s endpoints
 ]
 
 if settings.BYPASS_MEDIA:

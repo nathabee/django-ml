@@ -1,6 +1,6 @@
 [
   {
-    "model": "PomoloBeeCore.farm",
+    "model": "pomolobeecore.Farm",
     "pk": 1,
     "fields": {
       "name": "Abraracoutix Farm",

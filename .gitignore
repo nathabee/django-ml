@@ -34,6 +34,10 @@ wordpress/build/
 *.zip
 wordpress/plugin-src/**/dist/
 wordpress/plugin-src/**/build/
+wordpress/wp-content/uploads/
+wordpress/wp-content/themes/twentytwentythree/
+wordpress/wp-content/themes/twentytwentyfour/
+
 
 # database export
 backups/**/*.sql*

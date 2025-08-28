@@ -4,5 +4,5 @@ from django.apps import AppConfig
 class PomoloBeeCoreConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "PomoloBeeCore"
-    label = "PomoloBeeCore"   
+    label = "pomolobeecore"   
     verbose_name = "PomoloBee Core"
