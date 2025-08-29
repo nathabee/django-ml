@@ -1,10 +1,13 @@
 // src/context/AuthContext.tsx
 'use client';
 
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState,useMemo } from "react";
 import { User } from "@mytypes/user";
-import { FarmWithFields } from "@mytypes/farm";
-import { Field, FieldBasic } from "@mytypes/field";
+import { FarmWithFields } from "@mytypes/farm"; 
+import { Fruit } from '@mytypes/fruit';
+import { Field, FieldBasic } from '@mytypes/field';
+ 
+
 
 type Maybe<T> = T | null;
 
@@ -18,8 +21,15 @@ type AuthContextType = {
   setToken: (t: Maybe<string>) => void;
 
   // domain
-  farms: FarmWithFields[];            // all farms visible to the user (admin sees many)
+ farms: FarmWithFields[];
   setFarms: (f: FarmWithFields[]) => void;
+
+  fields: Field[];                         // full field records
+  setFields: (f: Field[]) => void;
+  fieldsById: Record<number, Field>;       // quick lookup
+
+  fruits: Fruit[];
+  setFruits: (f: Fruit[]) => void;
 
   activeFarm: Maybe<FarmWithFields>;
   setActiveFarm: (f: Maybe<FarmWithFields>) => void;
@@ -36,7 +46,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [farms, setFarmsState] = useState<FarmWithFields[]>([]);
   const [activeFarm, setActiveFarmState] = useState<Maybe<FarmWithFields>>(null);
   const [activeField, setActiveFieldState] = useState<Maybe<FieldBasic | Field>>(null);
+  const [fields, setFieldsState]   = useState<Field[]>([]);
+  const [fruits, setFruitsState]   = useState<Fruit[]>([]);
 
+  const fieldsById = useMemo(
+    () => Object.fromEntries(fields.map(f => [f.field_id, f])),
+    [fields]
+  );
   const isLoggedIn = !!token;
 
   // boot from localStorage
@@ -60,7 +76,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     if (typeof window === "undefined") return;
     if (token) localStorage.setItem("authToken", token);
     else localStorage.removeItem("authToken");
-  }, [token]);
+  }, [token]); 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem("fields", JSON.stringify(fields));
+    localStorage.setItem("fruits", JSON.stringify(fruits));
+  }, [fields, fruits]);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -110,12 +131,20 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
   const setActiveField = (f: Maybe<FieldBasic | Field>) => setActiveFieldState(f);
 
+  // expose setters
+const setFields = (f: Field[]) => setFieldsState(f);
+const setFruits = (f: Fruit[]) => setFruitsState(f);
+
   return (
     <AuthContext.Provider value={{
       token, user, isLoggedIn, login, logout, setToken,
       farms, setFarms,
       activeFarm, setActiveFarm,
       activeField, setActiveField,
+      fields, setFields, 
+      fieldsById, 
+      fruits, setFruits
+
     }}>
       {children}
     </AuthContext.Provider>

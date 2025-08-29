@@ -9,7 +9,8 @@ import { useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import { useAuth } from '@context/AuthContext';
 import useFetchData from '@hooks/useFetchData';
-import  { getApiUrl } from '@utils/helper'; 
+// import  { getApiUrl } from '@utils/helper'; 
+import { apiUser, authHeaders } from '@utils/api';
 
 export function useLoginHandler() {
   const { login } = useAuth();
@@ -17,24 +18,24 @@ export function useLoginHandler() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
  
-  const apiUrl = getApiUrl();
+  //const apiUrl = getApiUrl();
  
 
   const handleLogin = async (username: string, password: string, onSuccess: () => void) => {
     try {
       console.log("Login attempt:", { username });
-      console.log("API URL:", apiUrl);
+      //console.log("API URL:", apiUrl);
 
       
-      const response = await axios.post(`${apiUrl}/token/`, {
-        username,
-        password,
-      }) 
+      const response = await apiUser.post("/auth/login/",  { username, password });
 
       const { access: token } = response.data;
-      const userResponse = await axios.get(`${apiUrl}/users/me/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+
+ 
+
+      const userResponse = await apiUser.get("/me/", { headers: authHeaders(token) });
+
+
 
       const userInfo = userResponse.data;
       login(token, userInfo);

@@ -10,7 +10,8 @@ import { useAuth } from '@context/AuthContext';
 import { getToken , isTokenExpired } from '@utils/jwt'; 
 import axios from 'axios';
 import { ScoreRulePoint  } from '@mytypes/report';
-import { getApiUrl } from '@utils/helper';
+// import { getApiUrl } from '@utils/helper';
+import { apiComp, authHeaders } from '@utils/api';
 
 const useFetchData = () => {
     const { catalogue, setCatalogue, layouts, setLayouts,  niveaux, setNiveaux,
@@ -28,7 +29,7 @@ const useFetchData = () => {
             return; // Handle token validation as needed
         }
 
-        const apiUrl = getApiUrl();
+        //const apiUrl = getApiUrl();
 
 
         try {
@@ -36,7 +37,8 @@ const useFetchData = () => {
 
             // Fetch Catalogues only if they are not already set
             if (catalogue.length === 0) {
-                const response = await axios.get(`${apiUrl}/catalogues/`, {
+ 
+                const response = await apiComp.get('/catalogues/',    {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 //console.log('useFetchData catalogue:', response.data);
@@ -45,9 +47,10 @@ const useFetchData = () => {
             }
 
             if (layouts.length === 0) {
-                const layoutsResponse = await axios.get(`${apiUrl}/pdf_layouts/`, {
+                const layoutsResponse  = await apiComp.get('/pdf_layouts/',    {
                     headers: { Authorization: `Bearer ${token}` },
                 });
+ 
                 //console.log("get layoutsResponse ", layoutsResponse.data)
                 //console.log('useFetchData layouts');
                 setLayouts(layoutsResponse.data);
@@ -56,7 +59,7 @@ const useFetchData = () => {
 
             // Fetch Niveaux and store them in context/localStorage
             if (!niveaux || niveaux.length === 0) {
-                const niveauResponse = await axios.get(`${apiUrl}/niveaux/`, {
+                const niveauResponse  = await apiComp.get('/niveaux/',    {
                     headers: { Authorization: `Bearer ${token}` },
                 }); 
                 //console.log("get niveauResponse ", niveauResponse.data)
@@ -66,7 +69,7 @@ const useFetchData = () => {
 
 
             if (!scoreRulePoints || scoreRulePoints.length === 0) {
-                const scoreRuleResponse = await axios.get<ScoreRulePoint[]>(`${apiUrl}/scorerulepoints/`, {
+                const scoreRuleResponse = await apiComp.get<ScoreRulePoint[]>(`/scorerulepoints/`, {
                 headers: { Authorization: `Bearer ${token}` },
                 });
                 //console.log('Fetched scoreRuleResponse:', scoreRuleResponse.data);

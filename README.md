@@ -1,11 +1,15 @@
-# django-ml : Dockerized PomoloBee (Django + Next.js + Postgres + WordPress + MariaDB)
+# django-ml : Dockerized Multiservice (Django + Next.js + Postgres + WordPress + MariaDB)
 
-A learning stack for Docker + multi-service development:
 
-* **Django**: Django 5 backend (REST API, JWT auth; PomoloBee code inside)
+By installing the repository, you will get a dockerized multiservice environement containing a customized wordpress (theme and plugin), django used as backend for the wordpress plugins, and databases (for Django and Wordpress).
+It is also planned to add a ML backend and a next JS frontend.
+
+This is a learning stack for Docker + multi-service development:
+
+* **Django**: Django 5 backend (REST API, JWT auth; PomoloBee, Competence, CustomUser code inside)
 * **Web**: Next.js 14 frontend (server routes call Django)
 * **DB**: Postgres 16 (persistent volume)
-* **WordPress**: `wordpress` service (Apache + PHP official image)
+* **WordPress**: `wordpress` service (Apache + PHP official image + including theme and plugins to interface django)
 * **WP DB**: `wpdb` service (MariaDB 11)
 
 
@@ -75,13 +79,19 @@ docker compose --profile dev down --rmi local --volumes --remove-orphans
 
 ### 1) Clone
 
-```bash
-git clone <your-repo-url>
+```bash 
+git clone git@github.com:nathabee/ml-django.git
 cd django-ml
 ```
 
-### 2) Create project-root `.env` (one file for everything)
 
+
+### 2) Customisation
+
+#### 2.1) Create project-root `.env` (one file for everything)
+
+use the actual .env.example available in github and customize it if needed
+cp .env.example .env
 ```env
 # Django
 SECRET_KEY=dev-insecure                 # replace with a real key for anything public
@@ -110,7 +120,30 @@ WP_TABLE_PREFIX=wp_
 > Tip: generate a strong Django key in dev too:
 > `openssl rand -base64 48 | tr -d '\n'` → paste as `SECRET_KEY=...`
 
-### 3) Seed web dependencies (first run only)
+
+#### 2.2) skip some services or functionalities
+
+if there are parts of the project that you do not want to keep :
+* remove from the compose.yaml the service (or put it to another profile "dev" => "obsolete")
+* remove the plugin that you do not want from wordpress/wp-content/plugins (pomolobee oder competence)
+* remove the app that you do not want from django PomolobeeCore oder CompetenceCore ( remove from django/config/settings.py INSTALLED_APP )
+
+=> please note that if you do that the compose.yaml and  scripts/reset-all.sh must be changed
+
+### 3) run the installation script 
+
+
+```bash
+chmod +x scripts/reset-all.sh
+./scripts/reset-all.sh
+```
+
+This script will :
+
+#### 3.1) remove old django-ml docker environment 
+answer yes to the question "are you sure to remove?"
+
+#### 3.2) Seed web dependencies (first run only)
 
 ```bash
 docker compose --profile dev run --rm web npm ci
@@ -118,16 +151,15 @@ docker compose --profile dev run --rm web npm ci
 
 * You **do not** seed Django or WordPress deps manually; Django deps are baked into the image; WordPress/wpcli use official images.
 
-### 4) Build & start everything
+#### 3.3)  Build & start everything
 
 ```bash
 docker compose --profile dev up -d --build
 ```
 
-* This starts **Postgres**, **Django** (which runs `python manage.py migrate && runserver`), **Next.js** (dev server), **MariaDB** (`wpdb`) and **WordPress** (after `wpdb` is healthy).
-* Don’t run `runserver` or `npx next dev` manually—compose already does it.
+* This starts **Postgres**, **Django** (which runs `python manage.py migrate && runserver`), **Next.js** (dev server), **MariaDB** (`wpdb`) and **WordPress** (after `wpdb` is healthy). 
 
-### 5) Sanity checks
+#### 3.4)  Make Sanity checks
 S
 ```bash
 docker compose ps
@@ -136,18 +168,15 @@ curl -s http://localhost:8080/api/hello   # Web (proxies backend hello)
 # WordPress UI: http://localhost:8082
 ```
 
-### 6) Initialize Django data (first install of this DB)
+#### 3.5)  Initialize Django data (first install of this DB)
 
 **Use fixtures to populate the database :**
 
- 
+ for all django app, necessary data are initialized
 
 ```bash
 docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_superuser.json
-docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_farms.json
-docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_fields.json
-docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_fruits.json
-docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_rows.json
+...etc
 ```
 
 **create a superuser interactively if you need to log**
@@ -157,12 +186,12 @@ docker compose exec django python manage.py createsuperuser
 ```
  
 
-### 7) Finish WordPress installer (first run)
+#### 3.6)  Finish WordPress installer (first run)
 
 Open **[http://localhost:8082](http://localhost:8082)** and create a user to initialise the site 
 
  
-### 8) Apply WordPress site options with wpcli  (permission, activate theme, permalinks, logo, etc.)
+#### 3.7)  Apply WordPress site options with wpcli  (permission, activate theme, permalinks, logo, etc.)
 
 
 * Put your logo at `wordpress/wp-content/themes/pomolobee-theme/assets/images/logo.(png|svg)`

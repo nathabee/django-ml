@@ -8,6 +8,9 @@ The **django** service provides the backend API and authentication.
 
 ## Endpoints
 
+
+
+### user endpoints (UserCore)
 - `/health` → simple health check
 - `/api/hello` → returns a "Hello from Django" message
 - `/api/auth/login` → accepts `{username, password}`, returns JWT access/refresh
@@ -31,7 +34,34 @@ docker exec -it django-ml-api bash -lc "python manage.py createsuperuser"
 
 * API auto-reloads in dev mode inside Docker.
 * Data persists in the Docker volume `django-ml_db_data`.
+ 
 
-```
 
 ---
+
+### Test django with CURL
+
+#### create superuser to test a superuser
+
+
+
+```bash
+# we create pomotest/pomotest
+docker compose exec django python manage.py createsuperuser
+
+````
+
+#### get token
+
+```bash
+ curl -s -X POST http://localhost:8001/api/auth/login   -H 'content-type: application/json'   -d '{"username":"pomotest","password":"pomotest"}'
+
+ # set the value of ACCESS with the token value
+ 
+ ACCESS=
+````
+
+###
+````bash
+curl -s -H "Authorization: Bearer <TOKEN>" http://localhost:8001/api/pomolobee/farms/ | jq
+````

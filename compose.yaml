@@ -11,7 +11,7 @@ x-django-env: &django_env
   DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-app}
   DATABASE_HOST: db
   DATABASE_PORT: "5432"
-  BYPASS_MEDIA: ${BYPASS_MEDIA:-1}
+  BYPASS_MEDIA: ${BYPASS_MEDIA:-1}  
 x-web-env: &web_env
   BACKEND_INTERNAL_URL: ${BACKEND_INTERNAL_URL:-http://django:8000}
   PORT: ${WEB_PORT:-3000}
@@ -56,9 +56,8 @@ services:
       - "8001:8000"
     volumes:
       - ./django:/app:delegated
-    command: >
-      bash -lc "python manage.py migrate &&
-                python manage.py runserver 0.0.0.0:8000"
+    command: > 
+      bash -lc "python manage.py runserver 0.0.0.0:8000"
     profiles: ["dev"]
 
   web:

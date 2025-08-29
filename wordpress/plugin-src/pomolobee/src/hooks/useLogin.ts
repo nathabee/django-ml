@@ -5,23 +5,27 @@ import { useState } from 'react';
 import axios, { AxiosError } from 'axios';
 import { useAuth } from '@context/AuthContext';
 import useBootstrapData from '@hooks/useBootstrapData';
-import { getApiUrl } from '@utils/helper';
+import { apiUser, authHeaders } from '@utils/api';
+
 
 export function useLoginHandler() {
   const { login } = useAuth();
   const { fetchBootstrapData } = useBootstrapData();
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-
-  const apiUrl = getApiUrl().replace(/\/+$/, ''); // ensure no trailing slash
+ 
 
   const handleLogin = async (username: string, password: string, onSuccess: () => void) => {
-    try {
-      const response = await axios.post(`${apiUrl}/auth/login/`, { username, password });
+    try { 
+
+
+      const response = await apiUser.post("/auth/login/",  { username, password });
+
       const { access: token } = response.data;
 
-      const userResponse = await axios.get(`${apiUrl}/me/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+ 
+
+      const userResponse = await apiUser.get("/me/", { headers: authHeaders(token) });
+
 
       const userInfo = userResponse.data;
       login(token, userInfo);

@@ -29,7 +29,7 @@ class Command(BaseCommand):
 
 
         # Define the source and destination directories
-        src_dir = 'script_db/competence'
+        src_dir = 'CompetenceCore/script_db/competence'
         dest_dir = '/var/www/competence_project/media/origin'
 
         # Check if the destination directory exists and has write permission

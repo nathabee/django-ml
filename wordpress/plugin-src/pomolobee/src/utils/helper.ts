@@ -2,25 +2,10 @@
 import axios from 'axios';
 import logo from  "@assets/logo.png"; 
   
-export function getApiUrl(): string {
-  // Check WordPress global variable
-  if (typeof window !== 'undefined' && 'pomolobeeSettings' in window) {
-    //console.log('✅ Using WordPress pomolobeeSettings.apiUrl');
-    return (window as any).pomolobeeSettings.apiUrl;
-  }
-
-  // Check React/Next.js env
-  if (typeof process !== 'undefined' && process.env?.NEXT_PUBLIC_API_URL) {
-    //console.log('✅ Using process.env.NEXT_PUBLIC_API_URL');
-    return process.env.NEXT_PUBLIC_API_URL;
-  }
-
-  console.warn('⚠️ Fallback to localhost in utils helper getApiUrl');
-  return 'http://localhost:8001/api';
-}
+ 
 
 
-
+ 
 /**
  * Returns the Base64 data from localStorage or a default fallback image.
  * @param imageKey The key used to fetch the image.

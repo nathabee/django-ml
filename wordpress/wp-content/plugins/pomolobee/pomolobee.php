@@ -136,15 +136,16 @@ function pomolobee_register_settings() {
 
     add_settings_field(
         'pomolobee_api_url',          // Field ID
-        'API Base URL',                // Label
+        'API Base URL for Pomolobee',                // Label
         'pomolobee_api_url_render',   // Callback to render the input
         'pomolobee-settings',         // Page slug
         'pomolobee_main_section'      // Section ID
     );
+
 }
 
 // ✅ Renders the input box in the admin settings form
-function pomolobee_api_url_render() {
+function pomolobee_api_url_render() { 
     $value = get_option('pomolobee_api_url', 'http://localhost:8001/api');
     echo "<input type='text' name='pomolobee_api_url' value='" . esc_attr($value) . "' size='50'>";
 }
@@ -180,10 +181,13 @@ add_action('enqueue_block_assets', function () {
 
     // Inject the API URL into the frontend script
     $api_url = get_option('pomolobee_api_url', 'http://localhost:8001/api');
+
+ 
  
 
     wp_localize_script($handle, 'pomolobeeSettings', [
     'apiUrl' => $api_url,
+    'apiUserUrl' => $api_user_url,
     'basename' => parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)
     ]);
 
