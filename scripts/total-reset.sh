@@ -69,13 +69,43 @@ echo "📦 Seeding web/node modules (npm ci in one-off container)..."
 docker compose --profile "$PROFILE" run --rm web npm ci
 
 
-# migrate
-docker compose --profile dev exec django bash -lc "
-python manage.py makemigrations usercore &&
-python manage.py makemigrations pomolobeecore competencecore &&
-python manage.py showmigrations &&
-python manage.py migrate --noinput
-"
+## migrate
+#docker compose --profile dev exec django bash -lc "
+#python manage.py makemigrations usercore &&
+#python manage.py makemigrations pomolobeecore competencecore &&
+#python manage.py showmigrations &&
+#python manage.py migrate --noinput
+#"
+
+# create and set perms inside the container
+#echo "change permission in media" 
+# 0) Derive your uid/gid so Django writes as you (optional but recommended)
+#export UID=$(id -u)
+#export GID=$(id -g)
+# On the HOST
+#mkdir -p ./data/media
+#chown -R "$UID":"$GID" ./data/media
+#chmod -R 775 ./data/media
+# 1) Ensure the host media and staticfiles dir exists and is owned by you
+
+# On the HOST  
+#mkdir -p ./data/media ./data/static
+#chown -R -R "$UID":"$GID" ./data/media ./data/static
+#chmod -R u+rwX,g+rwX ./data/media ./data/static
+
+
+# 2) Drop a hardened .htaccess (served by Apache via bind mount)
+cat > ./django/media/.htaccess << "EOF"
+Options -Indexes
+<FilesMatch "\.(php|phps|phtml|phar)$">
+  Require all denied
+</FilesMatch>
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/* "access plus 30 days"
+</IfModule>
+EOF
+chmod 644 ./django/media/.htaccess
 
 
 # --- up ----------------------------------------------------------
@@ -93,10 +123,10 @@ wait_http_200 "http://localhost:8001/health" 90 || true
 
 # --- migrations -------------------------------------------------
 echo "🛠 Running makemigrations..."
-docker compose exec django python manage.py makemigrations --noinput
+docker compose --profile "$PROFILE"  exec django python manage.py makemigrations --noinput
 
 echo "🛠 Running migrate..."
-docker compose exec django python manage.py migrate --noinput
+docker compose --profile "$PROFILE"  exec django python manage.py migrate --noinput
 
 
 
@@ -104,22 +134,17 @@ docker compose exec django python manage.py migrate --noinput
 
 # --- create superuser (optional) --------------------------------
 echo "Create Django superuser now?" 
-docker compose exec django python manage.py createsuperuser
-
-# create and set perms inside the container
-docker compose exec django bash -lc "mkdir -p /app/media && chown -R 1000:1000 /app/media"
-docker compose exec django bash -lc 'cat > /app/media/.htaccess << "EOF"
-Options -Indexes
-<FilesMatch "\.(php|phps|phtml|phar)$">
-  Require all denied
-</FilesMatch>
-<IfModule mod_expires.c>
-  ExpiresActive On
-  ExpiresByType image/* "access plus 30 days"
-</IfModule>
-EOF'
+docker compose --profile "$PROFILE"  exec django python manage.py createsuperuser
 
 
+ 
+
+# --- load Static lib foradmin console ---------------------------------------  
+# it creates the django/staticfiles (host) <- /app/static (container django)
+docker exec -it beelab-api bash -lc "python manage.py collectstatic --noinput"
+
+
+ 
 # --- WordPress init ---------------------------------------------
 echo "Run WordPress init script activate theme, permalinks, logo?"
 echo "📋 Open WordPress installer at: http://localhost:8082"
@@ -153,7 +178,7 @@ docker compose exec django python manage.py seed_competence --clear
 docker compose exec django python manage.py populate_data_init || true
 docker compose exec django python manage.py create_groups_and_permissions || true
 docker compose exec django python manage.py populate_teacher || true
-docker compose exec django python manage.py create_translations_csv || true
+#docker compose exec django python manage.py create_translations_csv || true
 docker compose exec django python manage.py populate_translation || true
 set -e
  

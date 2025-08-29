@@ -57,7 +57,9 @@ services:
       - "8001:8000"
     volumes:
       - ./django:/app:delegated
-      - media_data:/app/media  
+      # bind mount instead of named volume
+      #- ./data/media:/app/media    
+      #- ./data/static:/app/staticfiles 
     command: > 
       bash -lc "python manage.py runserver 0.0.0.0:8000"
     profiles: ["dev"]
@@ -123,7 +125,8 @@ services:
     volumes:
       - wp_data:/var/www/html
       - ./wordpress/wp-content:/var/www/html/wp-content
-      - media_data:/var/www/html/media:ro   # <— Apache serves /media (read-only is fine)
+      - ./django/media:/var/www/html/media:ro
+      - ./django/staticfiles:/var/www/html/static:ro
     profiles: ["dev"]
 
   wpcli:
@@ -149,6 +152,5 @@ volumes:
   web_node_modules:
   db_data:
   wp_db_data:
-  wp_data:
-  media_data:
+  wp_data: 
  

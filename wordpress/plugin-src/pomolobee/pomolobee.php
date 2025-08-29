@@ -187,7 +187,6 @@ add_action('enqueue_block_assets', function () {
 
     wp_localize_script($handle, 'pomolobeeSettings', [
     'apiUrl' => $api_url,
-    'apiUserUrl' => $api_user_url,
     'basename' => parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH)
     ]);
 

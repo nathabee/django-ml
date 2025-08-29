@@ -160,17 +160,4 @@ class MLStatusSerializer(serializers.ModelSerializer):
         model = Image
         fields = ['image_id',   'processed']
 
-
-class FieldBasicSerializer(serializers.ModelSerializer):
-    field_id = serializers.IntegerField(source='id', read_only=True)
-    class Meta:
-        model = Field
-        fields = ['field_id', 'short_name', 'name', 'description']
-
-
-class FarmWithFieldsSerializer(serializers.ModelSerializer):
-    farm_id = serializers.IntegerField(source='id', read_only=True)
-    fields = FieldBasicSerializer(many=True, read_only=True)
-    class Meta:
-        model = Farm
-        fields = ['farm_id', 'name', 'fields']
+ 

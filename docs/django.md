@@ -38,11 +38,56 @@ This way, we can access Django media at http://localhost:8082/media/...
 and WP uploads at http://localhost:8082/wp-content/uploads/....
 
  
-### Create a user for testing
+### User
+
+#### Create a superuser for testing
 
 ```bash
 docker exec -it beelab-api bash -lc "python manage.py createsuperuser"
 ````
+
+### change password
+
+
+docker exec -it beelab-api python manage.py changepassword pomofarmer
+
+
+### change password with shell  
+
+```bash
+docker exec -it beelab-api python manage.py shell
+#Then in the shell:
+
+ 
+from django.contrib.auth import get_user_model
+User = get_user_model()
+u = User.objects.get(username="pomofarmer")
+u.set_password("DjangoPwd") 
+u.save()
+
+``` 
+
+### Check user data
+```bash
+docker exec -it beelab-api python manage.py shell
+
+#Then in the shell:
+from django.contrib.auth import get_user_model, authenticate
+User = get_user_model()
+print("USERNAME_FIELD =", User.USERNAME_FIELD)
+print("auth by username:", authenticate(username="pomofarmer", password="DjangoPwd")) 
+
+
+
+``` 
+
+
+
+# Try both forms:
+print("auth by username:", authenticate(username="pomofarmer", password="DjangoPwd"))
+print("auth by email:",    authenticate(email="farmer@example.com", password="DjangoPwd"))
+
+
 
 ## Dev Notes
 

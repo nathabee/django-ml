@@ -4,8 +4,8 @@ from django.apps import apps
 
 # map app_label -> command name (keeps control explicit)
 SEED_COMMANDS = {
-    "PomoloBeeCore": "seed_pomolobee",
-    "CompetenceCore": "seed_competence",
+    "pomolobeecore": "seed_pomolobee",
+    "competencecore": "seed_competence",
 }
 
 class Command(BaseCommand):

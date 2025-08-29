@@ -6,9 +6,10 @@ web/.vercel/
 
 # Python / Django
 **/__pycache__/
-**/*.pyc
+**/*.pyc 
 django/staticfiles/
-django/media/             # Django media (runtime)
+django/media/
+ 
 
 # WordPress uploads (runtime)
 wordpress/wp-content/uploads/

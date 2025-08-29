@@ -22,7 +22,7 @@ class Command(BaseCommand):
 
         # Define the source and destination directories
         src_dir = 'CompetenceCore/script_db/competence'
-        dest_dir = '/var/www/competence_project/media/origin'
+        dest_dir = '/var/www/competence_project/media/'
 
 
 
@@ -132,7 +132,7 @@ class Command(BaseCommand):
 
                 # Log the header_icon_path to check its correctness
                 print(f"Processing icon: { row['icon']}")
-                icon_path = os.path.join('origin', row['icon'])
+                icon_path = os.path.join('', row['icon'])
 
  
                 
@@ -296,7 +296,7 @@ class Command(BaseCommand):
                 # Log the header_icon_path to check its correctness
                 print(f"Processing header_icon: { row['header_icon']}")
  
-                header_icon_path = os.path.join('origin', row['header_icon'])
+                header_icon_path = os.path.join('', row['header_icon'])
  
  
                 

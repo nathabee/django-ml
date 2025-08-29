@@ -43,7 +43,8 @@ class FarmViewSet(ReadOnlyModelViewSet):
 
 # ---------- FIELD + FRUIT ---------- 
 
-class FieldViewSet(BaseReadOnlyViewSet):
+class FieldViewSet(ReadOnlyModelViewSet):
+    queryset = Field.objects.all()
     serializer_class = FieldSerializer
     def get_queryset(self):
         user = self.request.user
@@ -52,7 +53,7 @@ class FieldViewSet(BaseReadOnlyViewSet):
         return Field.objects.filter(farm__owner=user)
     
 
-class FruitViewSet(BaseReadOnlyViewSet):
+class FruitViewSet(ReadOnlyModelViewSet):
     queryset = Fruit.objects.all()
     serializer_class = FruitSerializer
 

@@ -3,6 +3,7 @@ from django.urls import path, include
 from django.http import JsonResponse
 from django.conf import settings
 from django.conf.urls.static import static
+
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from django.conf.urls import handler404, handler500
  
@@ -44,5 +45,12 @@ urlpatterns = [
 ]
 
 # this is off in docker
-if settings.BYPASS_MEDIA:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+#if settings.BYPASS_MEDIA:
+#    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+# this is used to acess the admin console
+
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL,  document_root=settings.MEDIA_ROOT)

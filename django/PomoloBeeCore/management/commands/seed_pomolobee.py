@@ -12,7 +12,7 @@ class Command(BaseCommand):
         parser.add_argument("--mode", choices=["copy", "symlink"], default="copy")
 
     def handle(self, *args, **opts):
-        app_path = Path(apps.get_app_config("PomoloBeeCore").path)
+        app_path = Path(apps.get_app_config("pomolobeecore").path)
         src = app_path / "script_db" / "pomolobee"
         dst = Path(settings.MEDIA_ROOT) / "pomolobee"
 

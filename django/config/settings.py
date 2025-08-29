@@ -31,8 +31,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: Don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
-
+#DEBUG = os.getenv('DEBUG', 'False') == 'True'
+DEBUG = True
 
 ALLOWED_HOSTS =  os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
 print ( "ALLOWED_HOSTS=", ALLOWED_HOSTS)
@@ -54,7 +54,7 @@ INSTALLED_APPS = [
     'UserCore.apps.UserCoreConfig',
     'PomoloBeeCore.apps.PomoloBeeCoreConfig',  # main app  
     'CompetenceCore.apps.CompetenceCoreConfig',  # main app  
-    'corsheaders',   #DEV ONLY
+    'corsheaders',   #DEV ONLY 
 ]
  
 REST_FRAMEWORK = {
@@ -159,10 +159,10 @@ USE_TZ = True
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
+STATIC_ROOT = os.getenv('STATIC_ROOT', '/app/staticfiles') 
+STATIC_URL = os.getenv('STATIC_URL', '/static/') 
+DEFAULT_USER_PASSWORD = os.getenv('DEFAULT_USER_PASSWORD', 'DjangoPwd') 
 
-STATIC_URL = 'static/'
- 
-DEFAULT_USER_PASSWORD = 'DjangoPwd'  #for fixture creation
 
 # Media Storage Configuration , Enable media serving in development
 # BYPASS_MEDIA = os.getenv('BYPASS_MEDIA', 'False') == 'True'

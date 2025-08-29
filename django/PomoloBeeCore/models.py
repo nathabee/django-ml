@@ -127,7 +127,7 @@ class Estimation(models.Model):
 
     # ML or User result
     fruit_plant = models.FloatField(null=True, blank=True)  #fruit_plant number of fruit per plant
-    confidence_score = models.FloatField(null=True, blank=True)
+ 
  
     timestamp = models.DateTimeField(auto_now_add=True) 
     plant_kg = models.FloatField()

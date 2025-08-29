@@ -1,7 +1,7 @@
 # BeeLab : Dockerized Multiservice (Django + Next.js + Postgres + WordPress + MariaDB)
 
 
-By installing the repository, you will get a dockerized multiservice environement containing a customized wordpress (theme and plugin), django used as backend for the wordpress plugins, and databases (for Django and Wordpress).
+By installing the repository, you will get a dockerized multiservice environment containing a customized wordpress (theme and plugin), django used as backend for the wordpress plugins, and databases (for Django and Wordpress).
 It is also planned to add a ML backend and a next JS frontend.
 
 This is a learning stack for Docker + multi-service development:
@@ -82,6 +82,7 @@ docker compose --profile dev down --rmi local --volumes --remove-orphans
 ```bash 
 git clone git@github.com:nathabee/beelab.git
 cd beelab
+mkdir -p ./django/media ./django/staticfiles
 ```
 
 
@@ -92,29 +93,55 @@ cd beelab
 
 use the actual .env.example available in github and customize it if needed
 cp .env.example .env
+
+
+# Put your UID/GID into .env (docker compose uses it):
 ```env
+DJANGO_BUILD_TARGET=dev
+WEB_BUILD_TARGET=dev
+
 # Django
-SECRET_KEY=dev-insecure                 # replace with a real key for anything public
+# you can get key for example with openssl rand -hex 64
+
+SECRET_KEY=putyoursecrethere
 DEBUG=1
-ALLOWED_HOSTS=*
+BASE_DIR="/app"
+MEDIA_URL = "/media/"
+MEDIA_ROOT = "/app/media" 
+ 
+# Database (compose service name 'db' is the host)
+DATABASE_HOST=db
+DATABASE_PORT=5432
 DATABASE_URL=postgresql://app:app@db:5432/app
+
+# Dev media serving
 BYPASS_MEDIA=1
 
-# Next.js
+# Optional
+ML_API_URL=http://localhost:5000/ml
+
+# Web/Next
 BACKEND_INTERNAL_URL=http://django:8000
 WEB_PORT=3000
 
-# Postgres
+# Postgres container
 POSTGRES_DB=app
 POSTGRES_USER=app
 POSTGRES_PASSWORD=app
 
-# WordPress / MariaDB (optional: keep defaults or set explicitly)
+# WordPress DB creds
 WP_DB_NAME=wordpress
 WP_DB_USER=wp
 WP_DB_PASSWORD=wp
 WP_DB_ROOT_PASSWORD=root
 WP_TABLE_PREFIX=wp_
+
+# id from my user
+#echo "UID=$(id -u)"
+#echo "GID=$(id -g)" 
+UID=1000
+GID=1000
+
 ```
 
 > Tip: generate a strong Django key in dev too:
