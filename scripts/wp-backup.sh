@@ -14,9 +14,9 @@ docker compose exec -T wpdb sh -lc '
 ' | gzip > "backups/wp/wp_${WP_DB_NAME:-wordpress}_$(date +%F_%H%M).sql.gz"
 
 #archive the volume
-docker run --rm -v django-ml_wp_data:/vol -v "$PWD/backups:/backup" alpine \
+docker run --rm -v beelab_wp_data:/vol -v "$PWD/backups:/backup" alpine \
   sh -c 'cd /vol && tar czf /backup/wp_files_$(date +%F_%H%M).tgz .'
 
 #
-docker run --rm -v django-ml_wp_db_data:/vol -v "$PWD/backups:/backup" alpine \
+docker run --rm -v beelab_wp_db_data:/vol -v "$PWD/backups:/backup" alpine \
   sh -c 'cd /vol && tar czf /backup/wp_db_volume_$(date +%F_%H%M).tgz .'

@@ -17,5 +17,5 @@ docker compose exec -T db pg_dump -U "$POSTGRES_USER" -d "$POSTGRES_DB" \
 
 
 #archive the volume
-docker run --rm -v django-ml_db_data:/vol -v "$PWD/backups:/backup" alpine \
+docker run --rm -v beelab_db_data:/vol -v "$PWD/backups:/backup" alpine \
   sh -c 'cd /vol && tar czf /backup/pg_volume_$(date +%F_%H%M).tgz .'

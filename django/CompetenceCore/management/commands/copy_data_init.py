@@ -1,3 +1,4 @@
+# django/CompetenceCore/management/commands/copy_data_init.py
 import os
 import csv
 from django.conf import settings
@@ -5,21 +6,7 @@ from django.core.management.base import BaseCommand
 import subprocess
 
 class Command(BaseCommand):
-
-    # resized is made in the model in save method
-    #def resize_image(self, image_path):
-    #    if not os.path.exists(image_path):
-    #        raise FileNotFoundError(f"The image {image_path} does not exist.")
-    #        
-    #    img = Image.open(image_path)
-    #    
-    #    # Resize while maintaining aspect ratio
-    #    img.thumbnail((100, 100), Image.LANCZOS)  # Use Image.LANCZOS instead of Image.ANTIALIAS##
-
-    #    # Save the image back to the same path or a new path
-    #    img.save(image_path)  # This will overwrite the original image. Use a new path if you want to keep the original.#
-
-    #    return image_path
+ 
 
 
     help = 'Copy file data from script_db/competence into media origin'

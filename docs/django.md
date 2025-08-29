@@ -7,15 +7,17 @@ The **django** service provides the backend API and authentication.
 - **Port**: exposed at [http://localhost:8001](http://localhost:8001)
 
 ## Endpoints
-
+- userApi :  `/api/user`
+- pomolobee Api :  `/api/pomolobee/`
+- competence Api :  `/api/competence`
 
 
 ### user endpoints (UserCore)
-- `/health` → simple health check
-- `/api/hello` → returns a "Hello from Django" message
-- `/api/auth/login` → accepts `{username, password}`, returns JWT access/refresh
-- `/api/auth/refresh` → renews an access token
-- `/api/me` → requires `Authorization: Bearer <token>`, returns current user info
+- userApi + `/health` → simple health check
+- userApi + `/hello` → returns a "Hello from Django" message
+- userApi + `/auth/login` → accepts `{username, password}`, returns JWT access/refresh
+- userApi + `/auth/refresh` → renews an access token
+- userApi + `/me` → requires `Authorization: Bearer <token>`, returns current user info
 
 ## Database
 
@@ -27,13 +29,13 @@ The **django** service provides the backend API and authentication.
 ### Create a user for testing
 
 ```bash
-docker exec -it django-ml-api bash -lc "python manage.py createsuperuser"
+docker exec -it beelab-api bash -lc "python manage.py createsuperuser"
 ````
 
 ## Dev Notes
 
 * API auto-reloads in dev mode inside Docker.
-* Data persists in the Docker volume `django-ml_db_data`.
+* Data persists in the Docker volume `beelab_db_data`.
  
 
 

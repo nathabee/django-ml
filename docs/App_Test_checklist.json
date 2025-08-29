@@ -6,7 +6,7 @@
     "os": "Ubuntu 22.04",
     "dockerVersion": ">=24.x",
     "composeVersion": "v2",
-    "project": "django-ml",
+    "project": "beelab",
     "projectVersion": "v0.1.0",
     "branch": "main"
   },
@@ -33,19 +33,19 @@
           "description": "Install web dependencies into the named volume using npm ci (CI/CD flow).",
           "expected": "`docker compose --profile dev run --rm web npm ci` completes with no fatal errors and exactly matches package-lock.json.",
           "state": "",
-          "details": "Run:\n  docker compose --profile dev run --rm web npm ci\nVerify node_modules populated:\n  docker compose run --rm web ls -1 node_modules | head\nCheck volume is present:\n  docker volume ls | grep django-ml_web_node_modules"
+          "details": "Run:\n  docker compose --profile dev run --rm web npm ci\nVerify node_modules populated:\n  docker compose run --rm web ls -1 node_modules | head\nCheck volume is present:\n  docker volume ls | grep beelab_web_node_modules"
         },
         {
           "test": "Build images",
           "description": "Build django, web, and pull postgres image.",
-          "expected": "`docker compose --profile dev up --build` completes; images `django-ml-django`, `django-ml-web`, and `postgres:16` are used/created.",
+          "expected": "`docker compose --profile dev up --build` completes; images `beelab-django`, `beelab-web`, and `postgres:16` are used/created.",
           "state": "",
-          "details": "Build and start in background:\n  docker compose --profile dev up -d --build\nConfirm images present:\n  docker images | grep -E 'django-ml-(django|web)'\n  docker images | grep 'postgres\\s*16'\nConfirm containers created:\n  docker compose --profile dev ps"
+          "details": "Build and start in background:\n  docker compose --profile dev up -d --build\nConfirm images present:\n  docker images | grep -E 'beelab-(django|web)'\n  docker images | grep 'postgres\\s*16'\nConfirm containers created:\n  docker compose --profile dev ps"
         },
         {
           "test": "Containers healthy/up",
           "description": "All services started and reachable.",
-          "expected": "`docker compose ps` shows django-ml-api, django-ml-web, and db running (or up).",
+          "expected": "`docker compose ps` shows beelab-api, beelab-web, and db running (or up).",
           "state": "",
           "details": "Check container state:\n  docker compose --profile dev ps\nPorts bound on host:\n  ss -lntp | grep -E ':8001|:8080' || true\nQuick endpoint checks:\n  curl -sS http://localhost:8001/health || true\n  curl -sS -I http://localhost:8080 || true\nLogs (brief):\n  docker compose logs --no-color --tail=50 django\n  docker compose logs --no-color --tail=50 web"
         }
@@ -156,9 +156,9 @@
         {
           "test": "DB data persists",
           "description": "Verify previously created user still exists.",
-          "expected": "Auth user remains present; volume `django-ml_db_data` persisted data.",
+          "expected": "Auth user remains present; volume `beelab_db_data` persisted data.",
           "state": "",
-          "details": "Confirm volume exists:\n  docker volume ls | grep django-ml_db_data\nCheck user still present:\n  docker compose exec db psql -U app -d app -c \"SELECT username FROM auth_user WHERE username IN ('admin','smoke');\""
+          "details": "Confirm volume exists:\n  docker volume ls | grep beelab_db_data\nCheck user still present:\n  docker compose exec db psql -U app -d app -c \"SELECT username FROM auth_user WHERE username IN ('admin','smoke');\""
         },
         {
           "test": "Web + API still OK",
@@ -182,9 +182,9 @@
         {
           "test": "Volumes listed",
           "description": "See project volumes.",
-          "expected": "`docker volume ls` includes `django-ml_db_data` and `django-ml_web_node_modules`.",
+          "expected": "`docker volume ls` includes `beelab_db_data` and `beelab_web_node_modules`.",
           "state": "",
-          "details": "List volumes:\n  docker volume ls | grep -E 'django-ml_db_data|django-ml_web_node_modules'\nInspect (optional):\n  docker volume inspect django-ml_db_data | head -n 20\n  docker volume inspect django-ml_web_node_modules | head -n 20"
+          "details": "List volumes:\n  docker volume ls | grep -E 'beelab_db_data|beelab_web_node_modules'\nInspect (optional):\n  docker volume inspect beelab_db_data | head -n 20\n  docker volume inspect beelab_web_node_modules | head -n 20"
         },
         {
           "test": "Clean rebuild (when needed)",

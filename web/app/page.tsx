@@ -50,7 +50,7 @@ export default function Home() {
 
   return (
     <main style={{ fontFamily: "system-ui, sans-serif", padding: "2rem", maxWidth: 700 }}>
-      <h1>django-ml web (Next.js)</h1>
+      <h1>beelab web (Next.js)</h1>
 
       <section style={{ marginTop: 16 }}>
         <h2>Hello</h2>

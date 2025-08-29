@@ -1,4 +1,4 @@
-name: django-ml
+name: beelab
 
 x-django-env: &django_env
   DJANGO_SETTINGS_MODULE: config.settings
@@ -46,7 +46,7 @@ services:
     build:
       context: ./django
       target: ${DJANGO_BUILD_TARGET:-dev}
-    container_name: django-ml-api
+    container_name: beelab-api
     environment:
       <<: *django_env
     depends_on:
@@ -64,7 +64,7 @@ services:
     build:
       context: ./web
       target: ${WEB_BUILD_TARGET:-dev}
-    container_name: django-ml-web
+    container_name: beelab-web
     environment:
       <<: *web_env
     ports:
@@ -80,7 +80,7 @@ services:
 
   db:
     image: postgres:16
-    container_name: django-ml-db
+    container_name: beelab-db
     environment:
       <<: *db_env
     volumes:
@@ -110,7 +110,7 @@ services:
     image: wordpress:6-php8.3-apache
     build:
       context: ./wordpress
-    container_name: django-ml-wp
+    container_name: beelab-wp
     depends_on:
       wpdb:
         condition: service_healthy

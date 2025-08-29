@@ -1,4 +1,4 @@
-# django-ml : Dockerized Multiservice (Django + Next.js + Postgres + WordPress + MariaDB)
+# BeeLab : Dockerized Multiservice (Django + Next.js + Postgres + WordPress + MariaDB)
 
 
 By installing the repository, you will get a dockerized multiservice environement containing a customized wordpress (theme and plugin), django used as backend for the wordpress plugins, and databases (for Django and Wordpress).
@@ -33,10 +33,10 @@ flowchart LR
   subgraph Docker["Docker (default bridge network)"]
     direction LR
 
-    Web["Next.js dev container: django-ml-web port: 3000"]:::svc
-    Django["Django dev server container: django-ml-api port: 8000"]:::svc
+    Web["Next.js dev container: beelab-web port: 3000"]:::svc
+    Django["Django dev server container: beelab-api port: 8000"]:::svc
     PG[("Postgres 16 service: db port: 5432")]:::db
-    WP["WordPress 6 / PHP 8.3 container: django-ml-wp port: 80"]:::svc
+    WP["WordPress 6 / PHP 8.3 container: beelab-wp port: 80"]:::svc
     WPDB[("MariaDB 11 service: wpdb port: 3306")]:::db
 
     %% Service links
@@ -80,8 +80,8 @@ docker compose --profile dev down --rmi local --volumes --remove-orphans
 ### 1) Clone
 
 ```bash 
-git clone git@github.com:nathabee/ml-django.git
-cd django-ml
+git clone git@github.com:nathabee/beelab.git
+cd beelab
 ```
 
 
@@ -134,13 +134,13 @@ if there are parts of the project that you do not want to keep :
 
 
 ```bash
-chmod +x scripts/reset-all.sh
-./scripts/reset-all.sh
+chmod +x scripts/total-reset.sh
+./scripts/total-reset.sh
 ```
 
 This script will :
 
-#### 3.1) remove old django-ml docker environment 
+#### 3.1) remove old beelab docker environment 
 answer yes to the question "are you sure to remove?"
 
 #### 3.2) Seed web dependencies (first run only)
@@ -269,7 +269,7 @@ docker compose --profile dev down
 
 ```bash
 docker compose --profile dev down
-docker volume rm django-ml_db_data
+docker volume rm beelab_db_data
 docker compose --profile dev up -d
 ```
 
@@ -278,7 +278,7 @@ docker compose --profile dev up -d
 ```bash
 docker compose --profile dev stop wordpress wpdb
 docker compose --profile dev rm -f wordpress wpdb
-docker volume rm django-ml_wp_db_data django-ml_wp_data
+docker volume rm beelab_wp_db_data beelab_wp_data
 docker compose --profile dev up -d wpdb wordpress
 ```
 
@@ -317,7 +317,7 @@ in our project docker example, the django dev container is http://localhost:8001
 
 
 ```text
-django-ml/
+beelab/
 ├─ compose.yaml
 ├─ .env
 ├─ django/                      # Django project (config + apps)

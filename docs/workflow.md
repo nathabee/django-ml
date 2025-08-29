@@ -1,6 +1,6 @@
 # Developer Workflow
 
-This document explains the typical workflow when working with the **django-ml** project.
+This document explains the typical workflow when working with the **beelab** project.
 
 ---
 
@@ -37,14 +37,14 @@ This populates `/app/node_modules` in the Docker volume.
 Check schema:
 
 ```bash
-docker exec -it django-ml-api bash -lc "python manage.py showmigrations"
-docker exec -it django-ml-api bash -lc "python manage.py dbshell"
+docker exec -it beelab-api bash -lc "python manage.py showmigrations"
+docker exec -it beelab-api bash -lc "python manage.py dbshell"
 ```
 
 From Postgres side:
 
 ```bash
-docker exec -it $(docker ps --filter "name=django-ml-db" --format "{{.ID}}") bash
+docker exec -it $(docker ps --filter "name=beelab-db" --format "{{.ID}}") bash
 psql -U app -d app -h localhost
 \dt
 ```
@@ -56,7 +56,7 @@ psql -U app -d app -h localhost
 For authentication tests:
 
 ```bash
-docker exec -it django-ml-api bash -lc "python manage.py createsuperuser"
+docker exec -it beelab-api bash -lc "python manage.py createsuperuser"
 ```
 
 ---
@@ -107,7 +107,7 @@ docker exec -it django-ml-api bash -lc "python manage.py createsuperuser"
 * Remove DB data (⚠️ wipes all tables):
 
   ```bash
-  docker volume rm django-ml_db_data
+  docker volume rm beelab_db_data
   ```
 
 ---

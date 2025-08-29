@@ -1,8 +1,8 @@
-# django-ml: Project Overview
+# beelab: Project Overview
 
 ## What is this project?
 
-**django-ml** is a learning project to explore **Dockerized multi-service development**.  
+**beelab** is a learning project to explore **Dockerized multi-service development**.  
 It combines a Django backend, a Next.js frontend, and a Postgres database into a single environment.
 
 The goal is to practice:
@@ -32,9 +32,9 @@ The goal is to practice:
 
 ## Current Features
 
-* `GET /api/hello` → hello world endpoint
-* `POST /api/auth/login` → obtain JWT token
-* `GET /api/me` → check current user with token
+* `GET /api/user/hello` → hello world endpoint
+* `POST /api/user/auth/login` → obtain JWT token
+* `GET /api/user/me` → check current user with token
 * Web UI with:
 
   * `/` home page showing backend response
