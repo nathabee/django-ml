@@ -43,5 +43,6 @@ urlpatterns = [
     path("api/competence/", include("CompetenceCore.urls")),   #   app’s endpoints
 ]
 
+# this is off in docker
 if settings.BYPASS_MEDIA:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

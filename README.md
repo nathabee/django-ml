@@ -324,6 +324,7 @@ beelab/
 │  ├─ manage.py
 │  ├─ config/
 │  └─ PomoloBeeCore/            # PomoloBee django app
+│  └─ CompetenceCore/           # Competence django app
 │  └─ UserCore/                 # User Auth... app
 ├─ web/                         # Next.js app (dev server)
 │  ├─ app/
@@ -331,12 +332,18 @@ beelab/
 ├─ wordpress/
 │  └─ wp-content/
 │     ├─ themes/
-│     │  └─ pomolobee-theme/    # your theme (theme.json, templates, assets, scripts)
+│     │  └─ pomolobee-theme/    # customed theme (theme.json, templates, assets, scripts)
 │     └─ plugins/
-│        └─ pomolobee/          # (optional) your plugin
+│        └─ pomolobee/          # (optional) plugin interfacing django PomolobeeCore. to display data in wordpress
+│        └─ competence/          # (optional) plugin interfacing django CompetenceCore
 └─ (volumes managed by Docker)
    • db_data        (Postgres)
    • web_node_modules
    • wp_db_data     (MariaDB)
    • wp_data        (WordPress files)
+   • media_data     (django media data)
 ```
+
+
+Competence is a project to manage student developpement chart
+PomoloBee is a project to help Farmer to manage their Orchard

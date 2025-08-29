@@ -26,6 +26,18 @@ The **django** service provides the backend API and authentication.
 - Tables are created via migrations at startup
 - Users managed via Django’s built-in auth system
 
+### datafile system
+
+In order to be able to serve the django media file with apache, we create a named volume media_data.
+-Mount it in Django at /app/media (Django writes here).
+-Mount the same volume in WordPress (Apache) at /var/www/html/media (Apache serves it).
+-Set MEDIA_ROOT=/app/media and MEDIA_URL=/media/ in Django.
+
+Frontend / URLs :
+This way, we can access Django media at http://localhost:8082/media/... 
+and WP uploads at http://localhost:8082/wp-content/uploads/....
+
+ 
 ### Create a user for testing
 
 ```bash

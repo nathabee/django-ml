@@ -12,7 +12,7 @@ check() {
 echo "🔎 Pinging services..."
 check "Web (Next.js)" "http://localhost:8080"
 check "Django health" "http://localhost:8001/health"
-check "Django hello"  "http://localhost:8001/api/hello"
+check "Django hello"  "http://localhost:8001/api/user/hello"
 check "WordPress"     "http://localhost:8082"
 
 echo

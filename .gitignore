@@ -1,16 +1,23 @@
-# node / next
+# Node / Next
 web/node_modules/
 web/.next/
 web/.turbo/
 web/.vercel/
 
-# python / django
+# Python / Django
 **/__pycache__/
 **/*.pyc
 django/staticfiles/
-django/media/
+django/media/             # Django media (runtime)
 
-# env / secrets
+# WordPress uploads (runtime)
+wordpress/wp-content/uploads/
+
+# Any folder named "upload" or "uploads" anywhere (defensive)
+**/upload/
+**/uploads/
+
+# Env / secrets
 .env
 *.env
 django/.env
@@ -19,28 +26,26 @@ web/.env
 *.secret
 *.key
 
-# docker
+# Docker
 **/.dockerignore
 
 # OS junk
 .DS_Store
 Thumbs.db
-/web/.next/
-/django/.env
 
-# plugins
+# Plugins/builds
 **/node_modules/
 wordpress/build/
 *.zip
 wordpress/plugin-src/**/dist/
 wordpress/plugin-src/**/build/
-wordpress/wp-content/uploads/
 wordpress/wp-content/themes/twentytwentythree/
 wordpress/wp-content/themes/twentytwentyfour/
 
-
-# database export
+# DB export
 backups/**/*.sql*
 
-# for me to ignore
+# Personal
 *.old
+ 
+

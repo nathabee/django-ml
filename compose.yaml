@@ -43,6 +43,7 @@ x-wpdb-env: &wpdb_env
 
 services:
   django:
+    user: "1000:1000"          # write as host user 1000
     build:
       context: ./django
       target: ${DJANGO_BUILD_TARGET:-dev}
@@ -56,6 +57,7 @@ services:
       - "8001:8000"
     volumes:
       - ./django:/app:delegated
+      - media_data:/app/media  
     command: > 
       bash -lc "python manage.py runserver 0.0.0.0:8000"
     profiles: ["dev"]
@@ -121,6 +123,7 @@ services:
     volumes:
       - wp_data:/var/www/html
       - ./wordpress/wp-content:/var/www/html/wp-content
+      - media_data:/var/www/html/media:ro   # <— Apache serves /media (read-only is fine)
     profiles: ["dev"]
 
   wpcli:
@@ -147,4 +150,5 @@ volumes:
   db_data:
   wp_db_data:
   wp_data:
+  media_data:
  

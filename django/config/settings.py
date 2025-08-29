@@ -165,14 +165,17 @@ STATIC_URL = 'static/'
 DEFAULT_USER_PASSWORD = 'DjangoPwd'  #for fixture creation
 
 # Media Storage Configuration , Enable media serving in development
-BYPASS_MEDIA = os.getenv('BYPASS_MEDIA', 'False') == 'True'
+# BYPASS_MEDIA = os.getenv('BYPASS_MEDIA', 'False') == 'True'
 
+#MEDIA_URL = "/media/"
+#MEDIA_ROOT = "/app/media" 
+BYPASS_MEDIA=0
 MEDIA_URL = os.getenv('MEDIA_URL', '/media/')  # Load from .env
 MEDIA_ROOT = os.getenv('MEDIA_ROOT', BASE_DIR / 'media')  # Default to 'media/' in development
 
 # In production, Django does NOT serve media files
-if not BYPASS_MEDIA:
-    DEFAULT_FILE_STORAGE = os.getenv('DEFAULT_FILE_STORAGE', 'django.core.files.storage.FileSystemStorage')
+#if not BYPASS_MEDIA:
+#    DEFAULT_FILE_STORAGE = os.getenv('DEFAULT_FILE_STORAGE', 'django.core.files.storage.FileSystemStorage')
 
 
 # Default primary key field type

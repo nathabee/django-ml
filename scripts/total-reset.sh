@@ -106,6 +106,19 @@ docker compose exec django python manage.py migrate --noinput
 echo "Create Django superuser now?" 
 docker compose exec django python manage.py createsuperuser
 
+# create and set perms inside the container
+docker compose exec django bash -lc "mkdir -p /app/media && chown -R 1000:1000 /app/media"
+docker compose exec django bash -lc 'cat > /app/media/.htaccess << "EOF"
+Options -Indexes
+<FilesMatch "\.(php|phps|phtml|phar)$">
+  Require all denied
+</FilesMatch>
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresByType image/* "access plus 30 days"
+</IfModule>
+EOF'
+
 
 # --- WordPress init ---------------------------------------------
 echo "Run WordPress init script activate theme, permalinks, logo?"
@@ -121,16 +134,13 @@ if yes_no "Ready?" default_no; then
 fi
 
 
-# create and set perms inside the container
-???competence or app or html/wordpress????
- ?? necessite de crer media data dans django in  /var/www/html/media/
- ?? ajou de pomolobee
-docker compose exec django bash -lc 'mkdir -p /var/www/html/wp-content/media/origin && chown -R 1000:1000 /var/www/competence/media'
-# docker compose exec django bash -lc 'mkdir -p /var/www/competence/media/origin && chown -R 1000:1000 /var/www/competence/media'
+
+
 
 # --- load Pomolobee fixtures ---------------------------------------  
 echo "📥 Loading fixtures into Django..."
 set +e
+docker compose exec django python manage.py seed_pomolobee --clear
 docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_superuser.json || echo "⚠️ superuser fixture failed"
 docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_farms.json   || echo "⚠️ farms fixture failed"
 docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_fields.json  || echo "⚠️ fields fixture failed"
@@ -139,8 +149,7 @@ docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/init
 
 
 # --- load Competence fixtures --------------------------------------- 
-
-docker compose exec django python manage.py copy_data_init || true
+docker compose exec django python manage.py seed_competence --clear  
 docker compose exec django python manage.py populate_data_init || true
 docker compose exec django python manage.py create_groups_and_permissions || true
 docker compose exec django python manage.py populate_teacher || true
@@ -161,5 +170,5 @@ fi
 echo
 echo "✅ Done."
 echo "🖥  Web:     http://localhost:8080"
-echo "🔌 Django:  http://localhost:8001 health, /api/hello"
+echo "🔌 Django:  http://localhost:8001 health, /api/user/hello"
 echo "📝 WP:      http://localhost:8082"
