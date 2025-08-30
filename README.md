@@ -1,27 +1,25 @@
-# BeeLab : Dockerized Multiservice (Django + Next.js + Postgres + WordPress + MariaDB)
+# BeeLab: Dockerized Multiservice (Django + Next.js + Postgres + WordPress + MariaDB)
 
+BeeLab provides a dockerized multi-service development stack:
 
-By installing the repository, you will get a dockerized multiservice environment containing a customized wordpress (theme and plugin), django used as backend for the wordpress plugins, and databases (for Django and Wordpress).
-It is also planned to add a ML backend and a next JS frontend.
+* **Django 5** backend (REST API, JWT auth; apps: **UserCore**, **PomoloBeeCore**, **CompetenceCore**)
+* **Next.js 14** frontend (calls Django)
+* **PostgreSQL 16** for Django
+* **WordPress 6 / PHP 8.3 (Apache)** with custom theme and plugins that interface with Django
+* **MariaDB 11** for WordPress
 
-This is a learning stack for Docker + multi-service development:
+Notes:
 
-* **Django**: Django 5 backend (REST API, JWT auth; PomoloBee, Competence, CustomUser code inside)
-* **Web**: Next.js 14 frontend (server routes call Django)
-* **DB**: Postgres 16 (persistent volume)
-* **WordPress**: `wordpress` service (Apache + PHP official image + including theme and plugins to interface django)
-* **WP DB**: `wpdb` service (MariaDB 11)
+* “Competence” manages student development charts.
+* “PomoloBee” helps farmers manage their orchards.
 
-
-```mermaid 
+```mermaid
 flowchart LR
-  %% =========== Styles ===========
   classDef svc fill:#eaf5ff,stroke:#1e88e5,color:#0b3a67;
   classDef db  fill:#fff8e6,stroke:#fb8c00,color:#5a3b00;
   classDef vol fill:#f6f6f6,stroke:#9e9e9e,stroke-dasharray:4 3,color:#333;
   classDef host fill:#ffffff,stroke:#bdbdbd,color:#333;
 
-  %% =========== Host (ports) ===========
   subgraph Host["Host (localhost)"]
     direction TB
     H8080["localhost:8080 Web"]:::host
@@ -29,7 +27,6 @@ flowchart LR
     H8082["localhost:8082 WordPress"]:::host
   end
 
-  %% =========== Docker network ===========
   subgraph Docker["Docker (default bridge network)"]
     direction LR
 
@@ -39,12 +36,10 @@ flowchart LR
     WP["WordPress 6 / PHP 8.3 container: beelab-wp port: 80"]:::svc
     WPDB[("MariaDB 11 service: wpdb port: 3306")]:::db
 
-    %% Service links
     Web -- "http://django:8000" --> Django
     Django -- "postgresql://app:app@db:5432/app" --> PG
     WP -- "wpdb:3306" --> WPDB
 
-    %% Volumes & bind mounts
     Web --- VNM["volume: web_node_modules"]:::vol
     PG  --- VPG["volume: db_data"]:::vol
     WP  --- VWP["volume: wp_data"]:::vol
@@ -56,227 +51,192 @@ flowchart LR
     WP --- BPL["bind: ./wordpress/wp-content/plugins/pomolobee -> /var/www/html/wp-content/plugins/pomolobee"]:::vol
   end
 
-  %% =========== Port mappings (host -> containers) ===========
   H8080 -->|"8080 -> 3000"| Web
   H8001 -->|"8001 -> 8000"| Django
   H8082 -->|"8082 -> 80"| WP
-
 ```
 
----
+## Getting Started (fresh or after reset)
 
-## 🚀 Getting Started (fresh / after reset)
+### 0) Prerequisites
 
-### 0) Prereqs
+* Docker 24+ and Docker Compose v2
 
-* Docker 24+, Docker Compose v2
-
-**Wipe the stack (optional destructive reset):**
+Optional destructive reset (wipes containers/images/volumes):
 
 ```bash
 docker compose --profile dev down --rmi local --volumes --remove-orphans
 ```
 
-### 1) Clone
+### 1) Clone the repo
 
-```bash 
+```bash
 git clone git@github.com:nathabee/beelab.git
 cd beelab
 mkdir -p ./django/media ./django/staticfiles
 ```
 
+### 2) Configure
 
+#### 2.1 Create `.env` at the project root
 
-### 2) Customisation
+Use the provided example and adjust if needed:
 
-#### 2.1) Create project-root `.env` (one file for everything)
-
-use the actual .env.example available in github and customize it if needed
+```bash
 cp .env.example .env
-
-
-# Put your UID/GID into .env (docker compose uses it):
-```env
-DJANGO_BUILD_TARGET=dev
-WEB_BUILD_TARGET=dev
-
-# Django
-# you can get key for example with openssl rand -hex 64
-
-SECRET_KEY=putyoursecrethere
-DEBUG=1
-BASE_DIR="/app"
-MEDIA_URL = "/media/"
-MEDIA_ROOT = "/app/media" 
- 
-# Database (compose service name 'db' is the host)
-DATABASE_HOST=db
-DATABASE_PORT=5432
-DATABASE_URL=postgresql://app:app@db:5432/app
-
-# Dev media serving
-BYPASS_MEDIA=1
-
-# Optional
-ML_API_URL=http://localhost:5000/ml
-
-# Web/Next
-BACKEND_INTERNAL_URL=http://django:8000
-WEB_PORT=3000
-
-# Postgres container
-POSTGRES_DB=app
-POSTGRES_USER=app
-POSTGRES_PASSWORD=app
-
-# WordPress DB creds
-WP_DB_NAME=wordpress
-WP_DB_USER=wp
-WP_DB_PASSWORD=wp
-WP_DB_ROOT_PASSWORD=root
-WP_TABLE_PREFIX=wp_
-
-# id from my user
-#echo "UID=$(id -u)"
-#echo "GID=$(id -g)" 
-UID=1000
-GID=1000
-
 ```
 
-> Tip: generate a strong Django key in dev too:
-> `openssl rand -base64 48 | tr -d '\n'` → paste as `SECRET_KEY=...`
+Tip: generate a strong Django key:
 
+```bash
+openssl rand -base64 48 | tr -d '\n'
+# paste as SECRET_KEY=...
+```
 
-#### 2.2) skip some services or functionalities
+#### 2.2 Skipping services or features (optional)
 
-if there are parts of the project that you do not want to keep :
-* remove from the compose.yaml the service (or put it to another profile "dev" => "obsolete")
-* remove the plugin that you do not want from wordpress/wp-content/plugins (pomolobee oder competence)
-* remove the app that you do not want from django PomolobeeCore oder CompetenceCore ( remove from django/config/settings.py INSTALLED_APP )
+If you don’t want certain parts:
 
-=> please note that if you do that the compose.yaml and  scripts/reset-all.sh must be changed
+* Remove or reprofile the service in `compose.yaml` (e.g. move to a different profile).
+* Remove unwanted WordPress plugins from `wordpress/wp-content/plugins` (e.g. `pomolobee`, `competence`).
+* Remove unwanted Django apps (e.g. `PomoloBeeCore`, `CompetenceCore`) from `django/config/settings.py` `INSTALLED_APPS`.
 
-### 3) run the installation script 
+If you do this, also adapt `compose.yaml` and any scripts that reference those components (e.g. `scripts/total-reset.sh`, fixtures, seed commands).
 
+### 3) Run the installation script
 
 ```bash
 chmod +x scripts/total-reset.sh
 ./scripts/total-reset.sh
 ```
 
-This script will :
+This interactive script **fully rebuilds** the dev stack. It:
 
-#### 3.1) remove old beelab docker environment 
-answer yes to the question "are you sure to remove?"
+* Removes existing containers/images/volumes related to BeeLab.
+* Builds images and starts all containers.
+* Runs Django migrations and loads fixtures.
+* Prepares three Django apps:
 
-#### 3.2) Seed web dependencies (first run only)
+  * **UserCore** (user management)
+  * **PomoloBeeCore** (orchard management)
+  * **CompetenceCore** (student evaluation)
+* Mounts host directories (code, static, media) for development.
+* Prepares WordPress (theme and plugins are mounted; plugins are not auto-activated).
+* Performs health checks.
+
+You will be prompted to:
+
+* Confirm destructive operations.
+* Create a Django superuser.
+* Complete the initial WordPress setup (superuser).
+
+#### Services after install
+
+* **Django API**: [http://localhost:8001](http://localhost:8001)  (health: `/health`, example: `/api/user/hello`)
+* **Next.js frontend**: [http://localhost:8080](http://localhost:8080)
+* **WordPress**: [http://localhost:8082](http://localhost:8082)
+
+## What the script does (expanded)
+
+### 3.1 Remove old BeeLab Docker environment
+
+You’ll be asked to confirm. This can delete volumes (data loss).
+
+### 3.2 Seed web dependencies (first run)
 
 ```bash
 docker compose --profile dev run --rm web npm ci
 ```
 
-* You **do not** seed Django or WordPress deps manually; Django deps are baked into the image; WordPress/wpcli use official images.
+Django/WordPress dependencies are handled by their images.
 
-#### 3.3)  Build & start everything
+### 3.3 Build and start everything
 
 ```bash
 docker compose --profile dev up -d --build
 ```
 
-* This starts **Postgres**, **Django** (which runs `python manage.py migrate && runserver`), **Next.js** (dev server), **MariaDB** (`wpdb`) and **WordPress** (after `wpdb` is healthy). 
+Starts: Postgres, Django (dev server), Next.js (dev server), MariaDB (wpdb), and WordPress (after `wpdb` is healthy).
 
-#### 3.4)  Make Sanity checks
-S
+### 3.4 Sanity checks
+
 ```bash
 docker compose ps
-curl -s http://localhost:8001/health      # Django -> {"status":"ok"}
-curl -s http://localhost:8080/api/hello   # Web (proxies backend hello)
+curl -s http://localhost:8001/health
+# -> {"status":"ok"}
 # WordPress UI: http://localhost:8082
 ```
 
-#### 3.5)  Initialize Django data (first install of this DB)
+### 3.5 Initialize Django data (first DB install)
 
-**Use fixtures to populate the database :**
-
- for all django app, necessary data are initialized
+Use fixtures/commands to seed required data:
 
 ```bash
 docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_superuser.json
-...etc
-```
-
-**create a superuser interactively if you need to log**
-
-```bash
+# ...add your other fixtures or seed commands as needed
 docker compose exec django python manage.py createsuperuser
 ```
- 
 
-#### 3.6)  Finish WordPress installer (first run)
+### 3.6 Complete WordPress installer (first run)
 
-Open **[http://localhost:8082](http://localhost:8082)** and create a user to initialise the site 
+Open [http://localhost:8082](http://localhost:8082) and create the initial admin user.
 
- 
-#### 3.7)  Apply WordPress site options with wpcli  (permission, activate theme, permalinks, logo, etc.)
+### 3.7 Apply WordPress site options with wp-cli
 
+Put your logo at:
 
-* Put your logo at `wordpress/wp-content/themes/pomolobee-theme/assets/images/logo.(png|svg)`
+```
+wordpress/wp-content/themes/pomolobee-theme/assets/images/logo.(png|svg)
+```
 
-* run the init script :
+Then:
 
-```bash 
+```bash
 ./scripts/wp-init.sh
-``` 
+```
 
-The script will fix host bind-mount permissions and import the logo and set it as the site logo.
+This script sets permissions, activates the theme, updates permalinks, applies logo, etc.
 
+## WordPress health check
 
+* Log into [http://localhost:8082](http://localhost:8082) and verify the site loads.
+* Run:
 
-# 5) Wordpress Health check:
-
-* log in http://localhost:8082 and check that the website is available
-
-* run the checks :
 ```bash
 ./scripts/health-check.sh
-``` 
+```
 
+## Exporting Site Editor changes back into the theme
 
+If you customize **Appearance → Editor**:
 
+* Use **… → Tools → Export** to download the ZIP.
+* Copy `theme.json`, `templates/`, `parts/` into:
 
-### 9) Export Site Editor changes back into the theme (so they live in Git)
+```
+wordpress/wp-content/themes/pomolobee-theme/
+```
 
-If you customize colors/templates in **Appearance → Editor**:
-
-* Open the **⋯** (top-right) → **Tools → Export** and download the ZIP.
-* Copy the ZIP contents (e.g. `theme.json`, `templates/`, `parts/`) into:
-
-  ```
-  wordpress/wp-content/themes/pomolobee-theme/
-  ```
 * Commit to Git.
-
----
 
 ## Useful commands
 
-**Developpement only : Total reset image,data,container and reinstallation (danger)**
+### Total dev reset (dangerous)
 
-The following script delete all and reinstall docker completly in the dev environment
+Deletes containers, images, volumes, then reinstalls:
+
 ```bash
 ./scripts/total-reset.sh
 ```
 
-this change wordpress repository to www-data:wwww-data
-if you keep on developping there in order to make update for github, run at the root of the repository:
+If WordPress files become owned by `www-data`, restore your user access:
+
 ```bash
 sudo setfacl -R -m u:"$USER":rwx wordpress
 sudo setfacl -R -d -m u:"$USER":rwx wordpress
 ```
-  
 
-**Logs / status**
+### Logs / status
 
 ```bash
 docker compose --profile dev ps -a
@@ -286,13 +246,13 @@ docker compose --profile dev logs -f wpdb
 docker compose --profile dev logs -f wordpress
 ```
 
-**Stop everything**
+### Stop everything
 
 ```bash
 docker compose --profile dev down
 ```
 
-**Clean DB only (danger)**
+### Clean Django DB only (danger)
 
 ```bash
 docker compose --profile dev down
@@ -300,7 +260,7 @@ docker volume rm beelab_db_data
 docker compose --profile dev up -d
 ```
 
-**Clean WordPress only (danger)**
+### Clean WordPress only (danger)
 
 ```bash
 docker compose --profile dev stop wordpress wpdb
@@ -309,39 +269,39 @@ docker volume rm beelab_wp_db_data beelab_wp_data
 docker compose --profile dev up -d wpdb wordpress
 ```
 
-**backup database django and wordpress**
-in root project
+### Back up databases (Django and WordPress)
+
+From the project root:
+
 ```bash
 bash scripts/backup.sh
-``` 
+```
 
-## wordpress plugins
+## WordPress plugins
 
-**pomolobee**
+### pomolobee
 
-From the wordpress/plugin-src/pomolobee/ folder:
+From `wordpress/plugin-src/pomolobee/`:
 
 ```bash
 npm install
 npm run build
-``` 
-📦 Installation
+```
+
+Installation:
+
 ```bash
-build_zip.sh
-install_plugin.sh
-``` 
-Go to **[http://localhost:8082](http://localhost:8082)** WP Admin > Plugins 
-check the plugin is there and activate if necessary
-Activate the plugin.
-Visit Settings > Competence Settings to configure the API endpoint.
-in our project docker example, the django dev container is http://localhost:8001/api 
+./build_zip.sh
+./install_plugin.sh
+```
 
+Then in WP Admin ([http://localhost:8082](http://localhost:8082)):
 
+* Go to **Plugins**, verify the plugin is present, and activate it.
+* Go to **Settings → Competence Settings** to configure the API endpoint.
+  In this dev stack, Django is at `http://localhost:8001/api`.
 
----
-## data structure
-
-
+## Project structure
 
 ```text
 beelab/
@@ -350,27 +310,28 @@ beelab/
 ├─ django/                      # Django project (config + apps)
 │  ├─ manage.py
 │  ├─ config/
-│  └─ PomoloBeeCore/            # PomoloBee django app
-│  └─ CompetenceCore/           # Competence django app
-│  └─ UserCore/                 # User Auth... app
+│  ├─ PomoloBeeCore/            # Orchard app
+│  ├─ CompetenceCore/           # Student evaluation app
+│  └─ UserCore/                 # Auth / user management
 ├─ web/                         # Next.js app (dev server)
 │  ├─ app/
 │  └─ package.json
 ├─ wordpress/
 │  └─ wp-content/
 │     ├─ themes/
-│     │  └─ pomolobee-theme/    # customed theme (theme.json, templates, assets, scripts)
+│     │  └─ pomolobee-theme/    # theme.json, templates, assets, scripts
 │     └─ plugins/
-│        └─ pomolobee/          # (optional) plugin interfacing django PomolobeeCore. to display data in wordpress
-│        └─ competence/          # (optional) plugin interfacing django CompetenceCore
+│        ├─ pomolobee/          # integrates Django PomoloBeeCore
+│        └─ competence/         # integrates Django CompetenceCore
 └─ (volumes managed by Docker)
    • db_data        (Postgres)
    • web_node_modules
    • wp_db_data     (MariaDB)
    • wp_data        (WordPress files)
-   • media_data     (django media data)
+   • media_data     (Django media)
 ```
 
 
-Competence is a project to manage student developpement chart
-PomoloBee is a project to help Farmer to manage their Orchard
+
+---
+ 
