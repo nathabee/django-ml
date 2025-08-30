@@ -62,9 +62,9 @@ flowchart TB
     D -->|Defines Pages| P[Pages Created in WordPress]
     P --> Q[Home, Dashboard, Reports, etc.]
 
-    click E href "https://developer.wordpress.org/plugins/"
-    click G href "https://reactjs.org/docs/getting-started.html"
-    click M href "http://localhost:8001/api/"
+    click E "https://developer.wordpress.org/plugins/"
+    click G "https://reactjs.org/docs/getting-started.html"
+    click M "http://localhost:8001/api/"
 ```
 
 ### **Key Points**:
@@ -92,5 +92,3 @@ flowchart TB
    * Dynamically loads content like student data, reports, etc.
 
 ---
-
-Let me know if you need further elaboration or additional modifications!
