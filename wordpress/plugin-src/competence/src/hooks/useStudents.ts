@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
+//import axios from 'axios';
 import { Eleve } from '@mytypes/eleve';
 import { getToken , isTokenExpired } from '@utils/jwt'; 
-import { getApiUrl } from '@utils/helper';
+//import { getApiUrl } from '@utils/helper';
+import { apiComp, authHeaders } from '@utils/api';
 
 export const useStudents = () => {
   const [students, setStudents] = useState<Eleve[]>([]);
@@ -18,9 +19,7 @@ export const useStudents = () => {
     }
 
     try {
-      const response = await axios.get(`${getApiUrl()}/eleves/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await apiComp.get(`/eleves/`, { headers: authHeaders(token) });
       setStudents(response.data);
     } catch (e) {
       console.error('Error fetching students', e);

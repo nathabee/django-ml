@@ -1,8 +1,9 @@
-// src/utils/helper.ts
-import axios from 'axios';
+// src/utils/helper.ts 
 import logo from  "@assets/logo.png"; 
-  
-export function getApiUrl(): string {
+import { apiComp, authHeaders } from '@utils/api';
+
+
+/*export function getApiUrl(): string {
   // Check WordPress global variable
   if (typeof window !== 'undefined' && 'competenceSettings' in window) {
     //console.log('✅ Using WordPress competenceSettings.apiUrl');
@@ -18,7 +19,7 @@ export function getApiUrl(): string {
   console.warn('⚠️ Fallback to localhost in utils helper getApiUrl');
   return 'http://localhost:8000/api';
 }
-
+ */
 
 
 /**
@@ -56,9 +57,7 @@ export async function fetchBase64Image(itemKey: string, idImage: number, token: 
       //console.log(`Fetching image for key ${itemKey} from ${idImage}...`); //ok
       
       // Fetch the image data from your Django API
-      const response = await axios.get(`${getApiUrl()}/myimage/${idImage}/base64/`, { 
-        headers: { Authorization: `Bearer ${token}` } // Include the token in the headers
-      });
+      const response = await apiComp.get(`/myimage/${idImage}/base64/`, { headers: authHeaders(token) });
       const base64Image = response.data.image_base64;
 
       // Store the fetched base64 image in localStorage

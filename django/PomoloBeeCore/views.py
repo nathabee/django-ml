@@ -14,15 +14,15 @@ from .serializers import (
     ImageSerializer, ImageUploadSerializer, 
     EstimationSerializer,  FarmWithFieldsSerializer
 )
-from .utils import BaseAPIView, BaseReadOnlyViewSet
+from .utils import BaseAPIView
 from rest_framework.parsers import MultiPartParser
 from django.db import transaction
 
 from rest_framework.viewsets import ReadOnlyModelViewSet
-from rest_framework_simplejwt.authentication import JWTAuthentication
+ 
+
+from UserCore.permissions import IsFarmer
 from rest_framework.permissions import IsAuthenticated
-
-
     
 
 logger = logging.getLogger(__name__)
@@ -30,9 +30,8 @@ logger = logging.getLogger(__name__)
  
 
 # ---------- FARM ---------- 
-class FarmViewSet(ReadOnlyModelViewSet):
-    authentication_classes = [JWTAuthentication]
-    permission_classes = [IsAuthenticated]
+class FarmViewSet(ReadOnlyModelViewSet): 
+    permission_classes = [IsAuthenticated, IsFarmer ]
     serializer_class = FarmWithFieldsSerializer
 
     def get_queryset(self):
@@ -44,6 +43,7 @@ class FarmViewSet(ReadOnlyModelViewSet):
 # ---------- FIELD + FRUIT ---------- 
 
 class FieldViewSet(ReadOnlyModelViewSet):
+    permission_classes = [IsAuthenticated, IsFarmer ]
     queryset = Field.objects.all()
     serializer_class = FieldSerializer
     def get_queryset(self):
@@ -60,6 +60,7 @@ class FruitViewSet(ReadOnlyModelViewSet):
 
 # ---------- LOCATION ---------- 
 class LocationListView(BaseAPIView):
+    permission_classes = [IsAuthenticated, IsFarmer ]
     def get(self, request):
         if request.user.is_superuser:
             fields = Field.objects.prefetch_related('rows__fruit').all()
@@ -77,6 +78,7 @@ class LocationListView(BaseAPIView):
 
 
 class ImageDetailView(BaseAPIView):
+    permission_classes = [IsAuthenticated, IsFarmer ]
     def get(self, request, image_id):
         image = get_object_or_error(Image, id=image_id)
         if (not request.user.is_superuser
@@ -88,6 +90,7 @@ class ImageDetailView(BaseAPIView):
 
 
 class ImageDeleteView(BaseAPIView):
+    permission_classes = [IsAuthenticated, IsFarmer ]
     def delete(self, request, image_id):
         image = get_object_or_error(Image, id=image_id)
         if (not request.user.is_superuser
@@ -111,6 +114,7 @@ class ImageDeleteView(BaseAPIView):
         return self.success(response_data)
 
 class ImageListView(BaseAPIView):
+    permission_classes = [IsAuthenticated, IsFarmer ]
     def get(self, request):
         user = request.user
         qs = Image.objects.all().order_by('-upload_date') if user.is_superuser else \
@@ -136,6 +140,7 @@ class ImageListView(BaseAPIView):
 
 
 class ImageView(BaseAPIView):
+    permission_classes = [IsAuthenticated, IsFarmer ]
     def post(self, request):
         serializer = ImageUploadSerializer(data=request.data)
         if serializer.is_valid():
@@ -212,6 +217,7 @@ class ImageView(BaseAPIView):
 
 
 class RetryProcessingView(BaseAPIView):
+    permission_classes = [IsAuthenticated, IsFarmer ]
     def post(self, request):
         image_id = request.data.get("image_id")
         image = get_object_or_error(Image, id=image_id)
@@ -238,6 +244,7 @@ class RetryProcessingView(BaseAPIView):
 
 # ---------- ML VERSION ----------
 class MLVersionView(BaseAPIView):
+    permission_classes = [IsAuthenticated, IsFarmer ]
     def get(self, request):
         try:
             response = requests.get(f"{settings.ML_API_URL}/version", timeout=5)
@@ -253,6 +260,7 @@ class MLVersionView(BaseAPIView):
 # ---------- ESTIMATION ----------  
 
 class FieldEstimationListView(BaseAPIView):
+    permission_classes = [IsAuthenticated, IsFarmer ]
     def get(self, request, field_id):
         base = Estimation.objects.filter(row__field_id=field_id)
         estimations = base if request.user.is_superuser else \
@@ -267,6 +275,7 @@ class FieldEstimationListView(BaseAPIView):
 
 
 class EstimationView(BaseAPIView):
+    permission_classes = [IsAuthenticated, IsFarmer ]
     def get(self, request, image_id):
         q = Estimation.objects.filter(image_id=image_id)
         if not request.user.is_superuser:
@@ -280,6 +289,7 @@ class EstimationView(BaseAPIView):
     
  
 class MLResultView(BaseAPIView):  
+    permission_classes = [IsAuthenticated, IsFarmer ]
     def post(self, request, image_id):
         logger.debug(f"🔍 Incoming ML result POST for image_id={image_id}")
         logger.debug(f"📦 Raw request data: {request.data}")
@@ -337,6 +347,7 @@ class MLResultView(BaseAPIView):
  
 
 class ManualEstimationView(BaseAPIView):
+    permission_classes = [IsAuthenticated, IsFarmer ]
     parser_classes = [MultiPartParser]
 
     def post(self, request):

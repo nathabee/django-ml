@@ -12,6 +12,26 @@ from rest_framework.permissions import BasePermission
 # permission for viewSet 
 ############################################################
  
+class IsFarmer(BasePermission):
+    """
+    Allows access only to farmer 
+    """
+
+    def has_permission(self, request, view):
+        # General permission check to ensure user is a teacher and authenticated
+        return request.user.is_authenticated and request.user.groups.filter(name='farmer').exists()
+
+ 
+class IsAdmin(BasePermission):
+    """
+    Allows access only to admin
+    """
+
+    def has_permission(self, request, view):
+        # General permission check to ensure user is a teacher and authenticated
+        return request.user.is_authenticated and request.user.groups.filter(name='admin').exists()
+
+ 
 
 class IsEleveProfessor(BasePermission):
     """
@@ -23,7 +43,7 @@ class IsEleveProfessor(BasePermission):
         return request.user.is_authenticated and request.user.groups.filter(name='teacher').exists()
 
     def has_object_permission(self, request, view, obj):
-        Eleve = apps.get_model("CompetenceCore", "Eleve")
+        Eleve = apps.get_model("competencecore", "Eleve")
         # Assumes `obj` is a Report instance, so we retrieve the related Eleve instance
         eleve_id = getattr(obj, 'eleve_id', None)
         

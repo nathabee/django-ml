@@ -1,18 +1,17 @@
 // src/hooks/useReport.ts
+ 
 
-// src/hooks/useReport.ts
-
-import { useState } from 'react';
-import axios from 'axios';
+import { useState } from 'react'; 
 import { ReportCataloguePatch } from '@mytypes/reportpatch';
 import { Report } from '@mytypes/report';
-import { getApiUrl } from '@utils/helper';
+// import { getApiUrl } from '@utils/helper';
+import { apiComp, authHeaders } from '@utils/api';
 
 export const useReport = (token: string | null) => {
   const [loading, setLoading] = useState(false);
   const [isError, setIsError] = useState(false);
 
-  const apiUrl = getApiUrl();
+  //const apiUrl = getApiUrl();
 
   const createReport = async (
     eleveId: number,
@@ -26,14 +25,12 @@ export const useReport = (token: string | null) => {
     setIsError(false);
 
     try {
-      const response = await axios.post(`${apiUrl}/fullreports/`, {
+      const response = await apiComp.post(`/fullreports/`, {
         eleve: eleveId,
         professeur: userId,
         pdflayout: pdflayoutId,
         catalogue_ids: catalogueIds,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      }, { headers: authHeaders(token) });
 
       return response.data;
     } catch (error) {
@@ -58,15 +55,13 @@ export const useReport = (token: string | null) => {
     setIsError(false);
 
     try {
-      const response = await axios.patch(`${apiUrl}/fullreports/${reportId}/`, {
+      const response = await apiComp.patch(`/fullreports/${reportId}/`, {
         id: reportId,
         eleve: eleveId,
         professeur: userId,
         pdflayout: pdflayoutId,
         report_catalogues_data: patchData,
-      }, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      },  { headers: authHeaders(token) });
 
       return response.data;
     } catch (error) {

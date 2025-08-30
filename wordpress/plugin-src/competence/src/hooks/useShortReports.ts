@@ -3,8 +3,9 @@
 import { useState, useCallback } from 'react';
 import { ShortReport } from '@mytypes/shortreport';
 import { getToken, isTokenExpired } from '@utils/jwt';
-import { getApiUrl } from '@utils/helper';
-import axios from 'axios';
+//import { getApiUrl } from '@utils/helper';
+//import axios from 'axios';
+import { apiComp, authHeaders } from '@utils/api';
 import { useAuth } from '@context/AuthContext';
 
 interface UseShortReportsResult {
@@ -32,10 +33,8 @@ const useShortReports = (): UseShortReportsResult => {
     setError(false);
 
     try {
-      const apiUrl = getApiUrl();
-      const response = await axios.get(`${apiUrl}/shortreports/`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      //const apiUrl = getApiUrl();
+      const response = await apiComp.get(`/shortreports/`, { headers: authHeaders(token) });
       setReports(response.data);
     } catch (err) {
       console.error('Error fetching short reports:', err);
