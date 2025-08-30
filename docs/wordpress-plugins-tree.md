@@ -36,35 +36,42 @@ Here’s a **Mermaid diagram** to explain the different components/modules in th
 
 ```mermaid
 flowchart TB
-    subgraph WordPress [WordPress Environment]
-        A[Admin Panel] -->|Sets API URL| B[Settings Page]
-        B --> C[Enqueues Scripts and Styles]
-        C --> D[Competence Plugin]
-        D --> E[Competence PHP File]
-        E --> F[API Integration (Django)]
-        D --> G[Frontend (React Components)]
-        G --> H[React Views and Components]
-    end
-
-    subgraph React [React App (Frontend)]
-        H[React Views and Components] --> I[Student Management]
-        H --> J[Dashboard]
-        H --> K[Catalogue Management]
-        H --> L[PDF View]
-    end
-
-    subgraph Django [Django Backend]
-        F --> M[CompetenceCore API]
-        M --> N[Student Data API]
-        M --> O[Catalogue API]
-    end
-
-    D -->|Defines Pages| P[Pages Created in WordPress]
-    P --> Q[Home, Dashboard, Reports, etc.]
-
+ subgraph WordPress["WordPress Environment"]
+        B["Settings Page"]
+        A["Admin Panel"]
+        C["Enqueues Scripts and Styles"]
+        D["Competence Plugin"]
+        E["Competence PHP File"]
+        F["API Integration Django"]
+        G["Frontend React Components"]
+        H["React Views and Components"]
+  end
+ subgraph React["React App Frontend"]
+        I["Student Management"]
+        J["Dashboard"]
+        K["Catalogue Management"]
+        L["PDF View"]
+  end
+ subgraph Django["Django Backend"]
+        M["CompetenceCore API"]
+        N["Student Data API"]
+        O["Catalogue API"]
+  end
+    A -- Sets API URL --> B
+    B --> C
+    C --> D
+    D --> E & G
+    E --> F
+    G --> H
+    H --> I & J & K & L
+    F --> M
+    M --> N & O
+    D -- Defines Pages --> P["Pages Created in WordPress"]
+    P --> Q["Home, Dashboard, Reports, etc."]
     click E "https://developer.wordpress.org/plugins/"
     click G "https://reactjs.org/docs/getting-started.html"
     click M "http://localhost:8001/api/"
+
 ```
 
 ### **Key Points**:
