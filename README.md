@@ -56,17 +56,37 @@ flowchart LR
   H8082 -->|"8082 -> 80"| WP
 ```
 
-## Getting Started (fresh or after reset)
+## Quickstart (dev)
+
+```bash
+# 1) Clone and prepare
+git clone git@github.com:nathabee/beelab.git
+cd beelab
+cp .env.example .env
+mkdir -p django/{media,staticfiles}
+
+# 2) Run the installer (full rebuild)
+chmod +x scripts/total-reset.sh
+./scripts/total-reset.sh
+```
+
+When prompted: confirm the reset and create the Django superuser.
+Then open WordPress at `http://localhost:8082` and finish the initial setup.
+
+Service URLs:
+
+* Django API: `http://localhost:8001`  (health: `/health`)
+* Web (Next.js): `http://localhost:8080`
+* WordPress: `http://localhost:8082`
+
+
+
+## Getting Started (detailled explanation)
 
 ### 0) Prerequisites
 
 * Docker 24+ and Docker Compose v2
 
-Optional destructive reset (wipes containers/images/volumes):
-
-```bash
-docker compose --profile dev down --rmi local --volumes --remove-orphans
-```
 
 ### 1) Clone the repo
 
@@ -93,7 +113,17 @@ openssl rand -base64 48 | tr -d '\n'
 # paste as SECRET_KEY=...
 ```
 
-#### 2.2 Skipping services or features (optional)
+
+#### 2.2 Wordpress Logo (optional)
+
+Put your logo at:
+
+```
+wordpress/wp-content/themes/pomolobee-theme/assets/images/logo.(png|svg)
+```
+
+
+#### 2.3 Skipping services or features (optional)
 
 If you don’t want certain parts:
 
@@ -163,45 +193,39 @@ Starts: Postgres, Django (dev server), Next.js (dev server), MariaDB (wpdb), and
 ```bash
 docker compose ps
 curl -s http://localhost:8001/health
-# -> {"status":"ok"}
-# WordPress UI: http://localhost:8082
 ```
 
-### 3.5 Initialize Django data (first DB install)
-
-Use fixtures/commands to seed required data:
-
-```bash
-docker compose exec django python manage.py loaddata PomoloBeeCore/fixtures/initial_superuser.json
-# ...add your other fixtures or seed commands as needed
-docker compose exec django python manage.py createsuperuser
-```
-
-### 3.6 Complete WordPress installer (first run)
+### 3.5 Complete WordPress installer (first run)
 
 Open [http://localhost:8082](http://localhost:8082) and create the initial admin user.
 
+### 3.6 Initialize Django data (first DB install)
+
+Use fixtures/commands to seed required data: 
+- createsuperuser
+- execute some commands from  management/commands
+- loaddata PomoloBeeCore/fixtures/initial_*.json
+- load data into CompetenceCore using  management/commands
+- seed image data from CompetenceCore/script_db/competence to upload (for wordpress)
+- seed image data from PomoloBeeCore/script_db/pomolobee to media (for django)  
+
+  
 ### 3.7 Apply WordPress site options with wp-cli
-
-Put your logo at:
-
-```
-wordpress/wp-content/themes/pomolobee-theme/assets/images/logo.(png|svg)
-```
-
-Then:
+ 
 
 ```bash
-./scripts/wp-init.sh
+wordpress/scripts/wp-init.sh
 ```
-
 This script sets permissions, activates the theme, updates permalinks, applies logo, etc.
 
-## WordPress health check
+## health check
 
-* Log into [http://localhost:8082](http://localhost:8082) and verify the site loads.
+* Django admin : [http://localhost:8001/admin](http://localhost:8001/admin) 
+* Wordpress admin:  [http://localhost:8082/wp-admin](http://localhost:8082/wp-admin) 
+* Wordpress: Log into [http://localhost:8082](http://localhost:8082) and verify the site loads.
+
+
 * Run:
-
 ```bash
 ./scripts/health-check.sh
 ```

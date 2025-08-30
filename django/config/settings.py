@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
+    "drf_spectacular", 
     'django.contrib.staticfiles',
     'rest_framework',  # Add Django REST Framework 
     "rest_framework_simplejwt",  # good to have
@@ -59,12 +60,9 @@ INSTALLED_APPS = [
  
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        "rest_framework_simplejwt.authentication.JWTAuthentication",
-        # leave SessionAuthentication out for APIs to avoid CSRF,
-        # or include it if you need sessions elsewhere:
-        # "rest_framework.authentication.SessionAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication", 
     ),
-    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema', 
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',  # Use AutoSchema to genera
     "DEFAULT_PERMISSION_CLASSES": (
         "rest_framework.permissions.IsAuthenticated",
     ),
@@ -214,4 +212,33 @@ LOGGING = {
             'propagate': False,
         },
     },
+}
+
+
+SPECTACULAR_SETTINGS = {
+    "TITLE": "BeeLab API",
+    "DESCRIPTION": "Django backend for PomoloBee and Competence.",
+    "VERSION": "0.1.0",
+    "SERVERS": [{"url": "http://localhost:8001"}],
+    "COMPONENT_SPLIT_REQUEST": True,
+    "SCHEMA_PATH_PREFIX": r"/api/",
+    "SECURITY": [{"BearerAuth": []}],
+    "COMPONENTS": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT",
+            }
+        }
+    },
+    'CONTACT': {
+        'name': 'BeeLab API Support',
+        'email': 'nathabee123@gmail.com',
+    },
+    'LICENSE': {
+        'name': 'MIT',
+        'url': 'https://opensource.org/licenses/MIT',
+    },
+    'SERVE_INCLUDE_SCHEMA': False,  # Don't expose the schema automatically
 }
